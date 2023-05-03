@@ -1,0 +1,17 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 1, 2023, 5:34:51 PM
+    Author     : moali
+*/
+#myButton {
+    
+    -fx-background-color: #0070fc;
+    -fx-background-radius: 20px;
+    -fx-padding: 10px 20px;
+    -fx-text-fill: #ffffff;
+   
+}
