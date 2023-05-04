@@ -6,9 +6,13 @@
 package tictactoeserver;
 
 import Assets.ServerUiClass;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import utilities.DataAccessLayer;
 
 /**
  *
@@ -18,6 +22,12 @@ public class TicTacToeServer extends Application {
     
     @Override
     public void start(Stage primaryStage) {
+        DataAccessLayer da = new DataAccessLayer (); 
+        try {
+            da.connect();
+        } catch (SQLException ex) {
+            Logger.getLogger(TicTacToeServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
        
         ServerUiClass root = new ServerUiClass();
         Scene scene = new Scene(root);
