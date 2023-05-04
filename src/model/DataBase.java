@@ -1,4 +1,3 @@
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -27,18 +26,16 @@ public class DataBase {
         //con = DriverManager.getConnection("jdbc:derby://localhost:1527/SignDataBase","root","root");
         
     }
-    public synchronized ResultSet getResultSet(){
-        return result;
+ public synchronized ResultSet executeQuery(){
+    try {
+        this.preStmt = con.prepareStatement("Select * from SIGN", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        return preStmt.executeQuery();
+    } catch (SQLException ex) {
+        Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
     }
-    public synchronized void selectResultSet(){
-        
-        try {
-            this.preStmt =con.prepareStatement("Select * from SIGN",ResultSet.TYPE_SCROLL_SENSITIVE ,ResultSet.CONCUR_READ_ONLY);
-            this.result = preStmt.executeQuery();
-        } catch (SQLException ex) {
-            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    return null;
+}
+
     public synchronized Player getPlayer(String email){
         String stmt = "select * from Player where email=?";
         PreparedStatement pStmt;
@@ -117,6 +114,6 @@ public class DataBase {
         } catch (SQLException ex) {
             Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
         }
-        selectResultSet();
+        executeQuery();
     }
 }
