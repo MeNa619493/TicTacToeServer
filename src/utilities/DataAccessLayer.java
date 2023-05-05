@@ -50,10 +50,9 @@ public class DataAccessLayer {
         isDone= prst.executeUpdate();
             if(isDone>0){System.out.println("Insert Done");}
             else{System.out.println("Cann't insert");}
-    
-    
     }
-     public synchronized String validateRegister(String userName){
+    
+    public synchronized String validateRegister(String userName){
         String stmt="select USERNAME from "+TABLE_NAME+ "where USERNAME=?";
         PreparedStatement pStmt;
         ResultSet rs;
@@ -74,6 +73,8 @@ public class DataAccessLayer {
     }
     
     public void close() throws SQLException{
+       rs.close();
+       prst.close();
        con.close();
     }
     
