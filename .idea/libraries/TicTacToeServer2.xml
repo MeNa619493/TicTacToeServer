@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="TicTacToeServer2">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/run1042596788/TicTacToeServer.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

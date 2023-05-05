@@ -24,7 +24,7 @@ public class DataAccessLayer {
     int isDone;
     String dataBaseUrl = "jdbc:derby://localhost:1527/TicTacToe";
     private static final String TABLE_NAME = "PLAYER";
-    public DataAccessLayer(){}
+    private DataAccessLayer(){}
     
     public static synchronized DataAccessLayer getInstance(){
         if (instance == null){
@@ -48,18 +48,23 @@ public class DataAccessLayer {
         prst.setString(2, p.getEmail());
         prst.setString(3, p.getPassword());
         isDone= prst.executeUpdate();
-            if(isDone>0){System.out.println("Insert Done");}
-            else{System.out.println("Cann't insert");}
+            if(isDone>0) 
+            {System.out.println("Insert Done");
+            }
+            else
+            {System.out.println("Cann't insert");
+            }
     
     
+            
     }
-     public synchronized String validateRegister(String userName){
-        String stmt="select USERNAME from "+TABLE_NAME+ "where USERNAME=?";
+     public synchronized String validateRegister(String email)throws Exception{
+        String stmt="select EMAIL from "+TABLE_NAME+ "where EMAIL=?";
         PreparedStatement pStmt;
         ResultSet rs;
-        try {
+        
             pStmt = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            pStmt.setString(1, userName);
+            pStmt.setString(1, email);
             rs = pStmt.executeQuery();
             if(rs.next()){
                 return "already signed-up";
@@ -67,10 +72,7 @@ public class DataAccessLayer {
             else{
                return "Registered Successfully";
             }
-        } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
-            return "Connection Issues";
-        }
+       
     }
     
     public void close() throws SQLException{

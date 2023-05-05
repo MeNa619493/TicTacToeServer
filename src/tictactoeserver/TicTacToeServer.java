@@ -22,12 +22,7 @@ public class TicTacToeServer extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        DataAccessLayer da = new DataAccessLayer (); 
-        try {
-            da.connect();
-        } catch (SQLException ex) {
-            Logger.getLogger(TicTacToeServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
+     
        
         ServerUiClass root = new ServerUiClass();
         Scene scene = new Scene(root);
@@ -43,6 +38,7 @@ public class TicTacToeServer extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+        
     }
     
 }

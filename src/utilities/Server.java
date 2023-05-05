@@ -15,6 +15,13 @@ import java.net.Socket;
 public class Server {
       private Socket clientSocket ;
       private ServerSocket serverSocket ;
+      public DataAccessLayer database;
+      
+      public void makeconnectionDataBase(){
+          database = DataAccessLayer.getInstance();
+      
+      }
+      
 
 
     

@@ -1,10 +1,25 @@
 package Assets;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Arc;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import jdk.nashorn.internal.parser.JSONParser;
+import org.json.JSONException;
+import org.json.JSONObject;
+import tictactoeserver.TicTacToeServer;
+import utilities.DataAccessLayer;
 
 public  class ServerUiClass extends AnchorPane {
 
@@ -17,8 +32,15 @@ public  class ServerUiClass extends AnchorPane {
     protected final Text text2;
     protected final Text NumberOfOnline;
     protected final Text NumberOfOffline;
+    ServerSocket serverSocket;
+    DataInputStream dis;
+    PrintStream ps;
+    Thread thread ;
+    Socket client ;
+    DataAccessLayer database;
 
     public ServerUiClass() {
+        database = DataAccessLayer.getInstance();
 
         text = new Text();
         text0 = new Text();
@@ -122,6 +144,50 @@ public  class ServerUiClass extends AnchorPane {
                 + "-fx-background-size: cover;"
                 + "-fx-background-position: center center;");
         btnServerState.setId("myButton");
+    
+    
         
-    }
-}
+        
+        
+        
+       
+        thread= new Thread(() -> {
+            try {
+                
+                serverSocket = new ServerSocket(5006);
+                while (true){
+                   client= serverSocket.accept();
+                     dis = new DataInputStream(client.getInputStream());
+                     
+                    String client = dis.readLine();
+                    System.out.println(client);
+//                    JSONObject ob= new JSONObject (dis);
+//                    try {
+//                    long type =(long) ob.get("type");
+//                    System.out.println(type);
+//
+//                    } catch (JSONException ex) {
+//                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+                }}
+            catch(IOException e){                    }
+                    
+                       
+            
+            
+              
+            
+        });
+        thread.start();
+  
+        
+        
+        
+        
+        
+        
+        
+        
+        
+   
+}}
