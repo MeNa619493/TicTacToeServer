@@ -1,12 +1,25 @@
 package Assets;
 
+
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import utilities.DataAccessLayer;
+import utilities.Player;
 
-public  class ServerUiClass extends AnchorPane {
+public class ServerUiClass extends AnchorPane {
 
     protected final PieChart pcPlayerStates;
     protected final Text text;
@@ -16,6 +29,15 @@ public  class ServerUiClass extends AnchorPane {
     protected final Text text2;
     protected final Text NumberOfOnline;
     protected final Text NumberOfOffline;
+    ServerSocket serverSocket;
+    DataInputStream dis;
+    PrintStream ps;
+    Thread thread ;
+    Socket client ;
+    DataAccessLayer database = DataAccessLayer.getInstance();
+    private Thread chartThread;
+    int onlinePlayersNo = 0;
+    int offlinePlayersNo = 0;
 
     public ServerUiClass() {
 
@@ -27,7 +49,6 @@ public  class ServerUiClass extends AnchorPane {
         text2 = new Text();
         NumberOfOnline = new Text();
         NumberOfOffline = new Text();
-
         setId("AnchorPane");
         setPrefHeight(600.0);
         setPrefWidth(600.0);
@@ -98,10 +119,74 @@ public  class ServerUiClass extends AnchorPane {
         getChildren().add(text2);
         getChildren().add(NumberOfOnline);
         getChildren().add(NumberOfOffline);
-        
-         setStyle("-fx-background-image: url('file:./src/Assets/bgGp.jpg');"
+
+        setStyle("-fx-background-image: url('file:./src/Assets/bgGp.jpg');"
                 + "-fx-background-size: cover;"
                 + "-fx-background-position: center center;");
         btnServerState.setId("myButton");
+
+    
+
+        thread= new Thread(() -> {
+            try {
+                
+                serverSocket = new ServerSocket(5006);
+                while (true){
+                   client= serverSocket.accept();
+                     dis = new DataInputStream(client.getInputStream());
+                     
+                    String runTest = dis.readLine();
+                    System.out.println(runTest);
+//                    JSONObject ob= new JSONObject (dis);
+//                    try {
+//                    long type =(long) ob.get("type");
+//                    System.out.println(type);
+//
+//                    } catch (JSONException ex) {
+//                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+                }}
+            catch(IOException e){                    }
+  
+        });
+        thread.start(); 
+        observeChart();
+    }
+    
+    private void observeChart(){
+        
+        chartThread = new Thread(new Runnable() { 
+            @Override
+            public void run() {
+                while(true){
+                    
+                        ObservableList<PieChart.Data> pieChartData;
+                        offlinePlayersNo = database.getOfflinePlayers();
+                        onlinePlayersNo = database.getOnlinePlayers();
+                        System.out.println("onlinePlayersNo = " + offlinePlayersNo);
+                        System.out.println("onlinePlayersNo = " + onlinePlayersNo);
+                        pieChartData =
+                        FXCollections.observableArrayList(
+                            new PieChart.Data("Offline", offlinePlayersNo),
+                            new PieChart.Data("Online", onlinePlayersNo));
+
+                        Platform.runLater(() -> {
+                            try {
+                                pcPlayerStates.setData(pieChartData);
+                            } catch (Exception ex) {
+                                System.out.println("Problem in chart thread");
+                                ex.printStackTrace();
+                            }
+                        });       
+                        try{
+                            Thread.sleep(3000);
+                        }catch(InterruptedException ex){
+
+                        }
+                } 
+            }
+        });
+        chartThread.start();
     }
 }
+
