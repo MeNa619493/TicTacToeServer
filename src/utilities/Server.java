@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 package utilities;
+
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
  * @author moham
  */
 public class Server {
+
     Thread listenerThread;
     private Socket clientSocket;
     private ServerSocket serverSocket;
@@ -28,8 +30,14 @@ public class Server {
                     try {
                         clientSocket = serverSocket.accept();
                     } catch (IOException ex) {
-                        
+
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                        try {
+                            serverSocket.close();
+                            listenerThread.stop();
+                        } catch (IOException ex1) {
+                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex1);
+                        }
                     }
                 }
             });
