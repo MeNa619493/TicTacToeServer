@@ -72,7 +72,95 @@ public class DataAccessLayer {
             return "Connection Issues";
         }
     }
-    
+    public synchronized ResultSet executeQuery(){
+    try {
+        this.preStmt = con.prepareStatement("Select * from SIGN", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        return preStmt.executeQuery();
+    } catch (SQLException ex) {
+        Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+}
+
+    public synchronized Player getPlayer(String email){
+        String stmt = "select * from Player where email=?";
+        PreparedStatement pStmt;
+        ResultSet rs;
+        Player p;
+        try {
+            pStmt = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            pStmt.setString(1,email);
+            rs = pStmt.executeQuery();
+            if(rs.next()){
+                p=new Player();
+                p.setUserName(rs.getString(1));
+                p.setEmail(rs.getString(2));
+                p.setPassword(rs.getString(3));
+                p.setIsActive(rs.getBoolean(4));
+                p.setIsPlaying(rs.getBoolean(5));
+                p.setScore(rs.getInt(6));
+                return p;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    public synchronized boolean checkIsActive(String email){
+        String stmt = "select isActive from Player where email=?";
+        PreparedStatement pStmt;
+        ResultSet rs;
+        try {
+            pStmt = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            pStmt.setString(1,email);
+            rs = pStmt.executeQuery();
+            if(rs.next()){
+                if(rs.getBoolean(1)){
+                    return true;
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+       public synchronized String validationLogin(String email,String password){
+        Player  ptemp = this.getPlayer(email);
+        if(ptemp!=null){
+            String pass=ptemp.getPassword();
+            if(pass.equals(password)){
+                if(checkIsActive(email)){
+                    return "This Email is alreay sign-in";
+                }
+                else{
+                    return "Logged in successfully";
+                }
+            }
+            else{
+                return "Password is incorrect";
+            }
+        }
+        else{
+            return "Email is incorrect";
+        }
+    }
+      
+    public synchronized void login(String email,String password){
+      checkActivation(true,email);
+    }
+        //update player data
+    public synchronized void checkActivation(boolean state,String email){
+       
+        try {
+            preStmt = con.prepareStatement("update player set isActive = ? where email = ?");
+            preStmt.setBoolean(1, state);
+            preStmt.setString(2, email);
+            preStmt.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        executeQuery();
+    }
     public void close() throws SQLException{
        con.close();
     }
