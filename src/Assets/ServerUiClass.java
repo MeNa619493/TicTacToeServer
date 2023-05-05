@@ -5,13 +5,18 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.logging.Level;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import utilities.DataAccessLayer;
+import utilities.Player;
 
 public class ServerUiClass extends AnchorPane {
 
@@ -28,7 +33,10 @@ public class ServerUiClass extends AnchorPane {
     PrintStream ps;
     Thread thread ;
     Socket client ;
-    DataAccessLayer database;
+    DataAccessLayer database = DataAccessLayer.getInstance();
+    private Thread chartThread;
+    int onlinePlayersNo = 0;
+    int offlinePlayersNo = 0;
 
     public ServerUiClass() {
 
@@ -141,5 +149,43 @@ public class ServerUiClass extends AnchorPane {
   
         });
         thread.start(); 
-}}
+        observeChart();
+    }
+    
+    private void observeChart(){
+        
+        chartThread = new Thread(new Runnable() { 
+            @Override
+            public void run() {
+                while(true){
+                    
+                        ObservableList<PieChart.Data> pieChartData;
+                        offlinePlayersNo = database.getOfflinePlayers();
+                        onlinePlayersNo = database.getOnlinePlayers();
+                        System.out.println("onlinePlayersNo = " + offlinePlayersNo);
+                        System.out.println("onlinePlayersNo = " + onlinePlayersNo);
+                        pieChartData =
+                        FXCollections.observableArrayList(
+                            new PieChart.Data("Offline", offlinePlayersNo),
+                            new PieChart.Data("Online", onlinePlayersNo));
+
+                        Platform.runLater(() -> {
+                            try {
+                                pcPlayerStates.setData(pieChartData);
+                            } catch (Exception ex) {
+                                System.out.println("Problem in chart thread");
+                                ex.printStackTrace();
+                            }
+                        });       
+                        try{
+                            Thread.sleep(3000);
+                        }catch(InterruptedException ex){
+
+                        }
+                } 
+            }
+        });
+        chartThread.start();
+    }
+}
 
