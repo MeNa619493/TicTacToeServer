@@ -193,13 +193,15 @@ public class ServerUiClass extends AnchorPane {
                         Platform.runLater(() -> {
                             try {
                                 pcPlayerStates.setData(pieChartData);
+                                NumberOfOnline.setText(""+onlinePlayersNo);
+                                NumberOfOffline.setText(""+offlinePlayersNo);
                             } catch (Exception ex) {
                                 System.out.println("Problem in chart thread");
                                 ex.printStackTrace();
                             }
                         });       
                         try{
-                            Thread.sleep(3000);
+                            Thread.sleep(50000);
                         }catch(InterruptedException ex){
 
                         }
