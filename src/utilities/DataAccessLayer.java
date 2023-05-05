@@ -10,6 +10,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.derby.jdbc.ClientDriver;
 
 /**
@@ -50,7 +52,6 @@ public class DataAccessLayer {
         prst.setString(1, p.getUsername());
         prst.setString(2, p.getEmail());
         prst.setString(3, p.getPassword());
-        
 
         isDone = prst.executeUpdate();
         if (isDone > 0) {
@@ -79,47 +80,65 @@ public class DataAccessLayer {
             return "Connection Issues";
         }
     }
-    
-    public synchronized int getOnlinePlayers( ){
+
+    public synchronized int getOnlinePlayers() {
         int rows = 0;
         try {
-            prst = con.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE ISACTIVE = TRUE"
-                    ,ResultSet.TYPE_SCROLL_SENSITIVE 
-                    ,ResultSet.CONCUR_READ_ONLY);
+            prst = con.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE ISACTIVE = TRUE",
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
             rs = prst.executeQuery();
-            if (rs.last()){
+            if (rs.last()) {
                 rows = rs.getRow();
             }
             return rows;
         } catch (SQLException ex) {
             ex.printStackTrace();
             System.out.println("catch isactive=true");
-           return -1;
+            return -1;
         }
     }
-    
-    public synchronized int getOfflinePlayers( ){
+
+    public synchronized int getOfflinePlayers() {
         int rows = 0;
         try {
-            prst = con.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE ISACTIVE = FALSE"
-                    ,ResultSet.TYPE_SCROLL_SENSITIVE 
-                    ,ResultSet.CONCUR_READ_ONLY);
+            prst = con.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE ISACTIVE = FALSE",
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
             rs = prst.executeQuery();
-            if (rs.last()){
+            if (rs.last()) {
                 rows = rs.getRow();
             }
             return rows;
         } catch (SQLException ex) {
             ex.printStackTrace();
             System.out.println("catch isactive=false");
-           return -1;
+            return -1;
         }
     }
-    
-    public void close() throws SQLException{
-       rs.close();
-       prst.close();
-       con.close();
+
+    public synchronized List<String> showAvailableFriend() {
+        List<String> availableFriends = new ArrayList<>();
+        try {
+            prst = con.prepareStatement("SELECT NAME FROM " + TABLE_NAME + " WHERE ISACTIVE = TRUE AND ISPLAY = FALSE",
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+            rs = prst.executeQuery();
+            while (rs.next()) {
+                String friendName = rs.getString("NAME");
+                availableFriends.add(friendName);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("Error retrieving available friends");
+        }
+        return availableFriends;
+    }
+
+    public void close() throws SQLException {
+        rs.close();
+        prst.close();
+        con.close();
     }
 
 }
