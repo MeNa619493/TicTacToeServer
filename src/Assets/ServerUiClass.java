@@ -1,38 +1,53 @@
 package Assets;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.logging.Level;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Arc;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import utilities.DataAccessLayer;
 
-public  class ServerUiClass extends AnchorPane {
+public class ServerUiClass extends AnchorPane {
 
+    protected final PieChart pcPlayerStates;
     protected final Text text;
     protected final Text text0;
-    protected final Arc onlineArc;
-    protected final Arc OfflineArc;
     protected final ToggleButton btnServerState;
     protected final Text text1;
     protected final Text text2;
     protected final Text NumberOfOnline;
     protected final Text NumberOfOffline;
+    ServerSocket serverSocket;
+    DataInputStream dis;
+    PrintStream ps;
+    Thread thread ;
+    Socket client ;
+    DataAccessLayer database;
 
     public ServerUiClass() {
 
+        pcPlayerStates = new PieChart();
         text = new Text();
         text0 = new Text();
-        onlineArc = new Arc();
-        OfflineArc = new Arc();
         btnServerState = new ToggleButton();
         text1 = new Text();
         text2 = new Text();
         NumberOfOnline = new Text();
         NumberOfOffline = new Text();
-
         setId("AnchorPane");
         setPrefHeight(600.0);
         setPrefWidth(600.0);
+
+        pcPlayerStates.setLayoutX(146.0);
+        pcPlayerStates.setLayoutY(149.0);
+        pcPlayerStates.setPrefHeight(278.0);
+        pcPlayerStates.setPrefWidth(348.0);
 
         text.setFill(javafx.scene.paint.Color.valueOf("#0070fc"));
         text.setLayoutX(14.0);
@@ -49,28 +64,6 @@ public  class ServerUiClass extends AnchorPane {
         text0.setStrokeWidth(0.0);
         text0.setText("Player State");
         text0.setFont(new Font("System Bold", 24.0));
-
-        onlineArc.setFill(javafx.scene.paint.Color.valueOf("#ff1f1f"));
-        onlineArc.setLayoutX(302.0);
-        onlineArc.setLayoutY(250.0);
-        onlineArc.setLength(270.0);
-        onlineArc.setRadiusX(150.0);
-        onlineArc.setRadiusY(150.0);
-        onlineArc.setStartAngle(45.0);
-        onlineArc.setStroke(javafx.scene.paint.Color.BLACK);
-        onlineArc.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
-        onlineArc.setType(javafx.scene.shape.ArcType.ROUND);
-
-        OfflineArc.setFill(javafx.scene.paint.Color.LIME);
-        OfflineArc.setLayoutX(301.0);
-        OfflineArc.setLayoutY(250.0);
-        OfflineArc.setLength(90.0);
-        OfflineArc.setRadiusX(150.0);
-        OfflineArc.setRadiusY(150.0);
-        OfflineArc.setStartAngle(-45.0);
-        OfflineArc.setStroke(javafx.scene.paint.Color.BLACK);
-        OfflineArc.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
-        OfflineArc.setType(javafx.scene.shape.ArcType.ROUND);
 
         btnServerState.setGraphicTextGap(1.0);
         btnServerState.setLayoutX(498.0);
@@ -109,19 +102,44 @@ public  class ServerUiClass extends AnchorPane {
         NumberOfOffline.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         NumberOfOffline.setFont(new Font("System Bold", 18.0));
 
+        getChildren().add(pcPlayerStates);
         getChildren().add(text);
         getChildren().add(text0);
-        getChildren().add(onlineArc);
-        getChildren().add(OfflineArc);
         getChildren().add(btnServerState);
         getChildren().add(text1);
         getChildren().add(text2);
         getChildren().add(NumberOfOnline);
         getChildren().add(NumberOfOffline);
+
         setStyle("-fx-background-image: url('file:./src/Assets/bgGp.jpg');"
                 + "-fx-background-size: cover;"
                 + "-fx-background-position: center center;");
         btnServerState.setId("myButton");
-        
-    }
-}
+
+    
+
+        thread= new Thread(() -> {
+            try {
+                
+                serverSocket = new ServerSocket(5006);
+                while (true){
+                   client= serverSocket.accept();
+                     dis = new DataInputStream(client.getInputStream());
+                     
+                    String runTest = dis.readLine();
+                    System.out.println(runTest);
+//                    JSONObject ob= new JSONObject (dis);
+//                    try {
+//                    long type =(long) ob.get("type");
+//                    System.out.println(type);
+//
+//                    } catch (JSONException ex) {
+//                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+                }}
+            catch(IOException e){                    }
+  
+        });
+        thread.start(); 
+}}
+

@@ -1,0 +1,31 @@
+Fri May 05 20:09:53 EET 2023 : Apache Derby Network Server - 10.10.2.0 - (1582446) started and ready to accept connections on port 1527
+----------------------------------------------------------------
+Fri May 05 20:22:30 EET 2023:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance a816c00e-0187-ed1b-2953-00001143b1ed 
+on database directory D:\ITI\java\final Project\TicTacToeServer\src\dataBase\TicTacToe with class loader sun.misc.Launcher$AppClassLoader@1d44bcfa 
+Loaded from file:/C:/Program%20Files/glassfish-4.1.1/javadb/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_202-b08
+user.dir=C:\Program Files\glassfish-4.1.1\javadb
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=D:\ITI\java\final Project\TicTacToeServer\src\dataBase
+Database Class Loader started - derby.database.classpath=''
+----------------------------------------------------------------
+Fri May 05 20:22:52 EET 2023:
+Shutting down instance a816c00e-0187-ed1b-2953-00001143b1ed on database directory D:\ITI\java\final Project\TicTacToeServer\src\dataBase\TicTacToe with class loader sun.misc.Launcher$AppClassLoader@1d44bcfa 
+Fri May 05 20:22:52 EET 2023 Thread[DRDAConnThread_2,5,main] (DATABASE = TicTacToe), (DRDAID = {2}), Database 'TicTacToe' shutdown.
+----------------------------------------------------------------
+Fri May 05 20:22:58 EET 2023:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.2.0 - (1582446): instance 560740aa-0187-ed1b-2953-00001143b1ed 
+on database directory D:\ITI\java\final Project\TicTacToeServer\src\dataBase\TicTacToe with class loader sun.misc.Launcher$AppClassLoader@1d44bcfa 
+Loaded from file:/C:/Program%20Files/glassfish-4.1.1/javadb/lib/derby.jar
+java.vendor=Oracle Corporation
+java.runtime.version=1.8.0_202-b08
+user.dir=C:\Program Files\glassfish-4.1.1\javadb
+os.name=Windows 10
+os.arch=amd64
+os.version=10.0
+derby.system.home=D:\ITI\java\final Project\TicTacToeServer\src\dataBase
+Database Class Loader started - derby.database.classpath=''
