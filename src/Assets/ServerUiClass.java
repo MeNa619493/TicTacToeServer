@@ -164,10 +164,8 @@ public class ServerUiClass extends AnchorPane {
 //                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
 //                    }
                 }
-            } catch (IOException e) {
-            }
-
-                }}
+          
+                }
             catch(IOException e){                    }
   
         });
@@ -212,7 +210,4 @@ public class ServerUiClass extends AnchorPane {
     }
 }
 
-        });
-        thread.start();
-    }
-}
+ 
