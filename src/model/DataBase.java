@@ -17,15 +17,23 @@ import java.util.logging.Logger;
  * @author USER
  */
 public class DataBase {
+     private static DataBase InstanceFromDatabse;
     public Connection con;
     private PreparedStatement preStmt;
     private ResultSet result;
-    
-    private DataBase() throws SQLException{
+    // Singleton design pattern to ensure that only one instance of the database
+           private DataBase() throws SQLException{
         DriverManager.registerDriver(new ClientDriver());
-        //con = DriverManager.getConnection("jdbc:derby://localhost:1527/SignDataBase","root","root");
-        
+       //con = DriverManager.getConnection("jdbc:derby://localhost:1527/SignDataBase","root","root");
     }
+    
+    public static DataBase getConnection() throws SQLException{
+        if(InstanceFromDatabse == null){
+           InstanceFromDatabse = new DataBase();
+        }
+        return InstanceFromDatabse;
+    }
+    
  public synchronized ResultSet executeQuery(){
     try {
         this.preStmt = con.prepareStatement("Select * from SIGN", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
