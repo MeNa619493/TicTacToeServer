@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.control.ToggleButton;
@@ -32,12 +33,18 @@ public  class ServerUiClass extends AnchorPane {
     protected final Text text2;
     protected final Text NumberOfOnline;
     protected final Text NumberOfOffline;
+    private StringTokenizer token;
+
     ServerSocket serverSocket;
     DataInputStream dis;
     PrintStream ps;
     Thread thread ;
     Socket client ;
     DataAccessLayer database;
+    int type ;
+    String username;
+    String email;
+    String password;
 
     public ServerUiClass() {
         database = DataAccessLayer.getInstance();
@@ -148,8 +155,7 @@ public  class ServerUiClass extends AnchorPane {
     
         
         
-        
-        
+       
        
         thread= new Thread(() -> {
             try {
@@ -158,19 +164,36 @@ public  class ServerUiClass extends AnchorPane {
                 while (true){
                    client= serverSocket.accept();
                      dis = new DataInputStream(client.getInputStream());
-                     
-                    String client = dis.readLine();
-                    System.out.println(client);
-//                    JSONObject ob= new JSONObject (dis);
-//                    try {
-//                    long type =(long) ob.get("type");
-//                    System.out.println(type);
-//
-//                    } catch (JSONException ex) {
-//                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
+                      String data =dis.readLine();
+                      System.out.println(dis.readLine());
+                      token = new StringTokenizer(data,"####");
+                            String type= token.nextToken();
+
+                            String username = token.nextToken();
+                            email = token.nextToken();
+                            String password = token.nextToken();
+                            System.out.println(username+" "+email+" "+password);
+                             String check;
+                            check = database.validateRegister(email);
+                            System.out.println(check);
+                            ps.println(check);
+                             if(check.equals("Registered Successfully")){
+                
+                                    database.signUp(username,email,password);
+                                    System.out.println("User is registered now , check database");   
+                                    }
+                             else if (check.equals("already signed-up")){
+                                     ps.println("already signed-up");
+            }
+                            
+                            
+                
+                
                 }}
-            catch(IOException e){                    }
+                     
+                
+            catch(Exception e){ 
+            System.out.println("Connection Issues");}
                     
                        
             
@@ -190,4 +213,9 @@ public  class ServerUiClass extends AnchorPane {
         
         
    
-}}
+}
+
+
+
+   }
+

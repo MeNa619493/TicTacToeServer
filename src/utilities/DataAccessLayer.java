@@ -41,12 +41,12 @@ public class DataAccessLayer {
         System.out.println("connection is Done");
     }
     
-    public synchronized void  signUp (Player p) throws SQLException{
+    public synchronized void  signUp (String username, String email , String password) throws SQLException{
         String Stmt = "insert into"+ TABLE_NAME+"(USERNAME,EMAIL,PASSWORD) values(?,?,?)";
         prst= con.prepareStatement(Stmt) ;
-        prst.setString(1, p.getUsername());
-        prst.setString(2, p.getEmail());
-        prst.setString(3, p.getPassword());
+        prst.setString(1, username);
+        prst.setString(2, email);
+        prst.setString(3, password);
         isDone= prst.executeUpdate();
             if(isDone>0) 
             {System.out.println("Insert Done");
