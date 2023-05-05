@@ -5,13 +5,18 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.logging.Level;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import utilities.DataAccessLayer;
+import utilities.Server;
 
 public class ServerUiClass extends AnchorPane {
 
@@ -26,12 +31,24 @@ public class ServerUiClass extends AnchorPane {
     ServerSocket serverSocket;
     DataInputStream dis;
     PrintStream ps;
-    Thread thread ;
-    Socket client ;
+    Thread thread;
+    Socket client;
     DataAccessLayer database;
+    Thread serverStatsThread;
+    boolean serverState;
+    Server server;
+    boolean severFlag;
 
     public ServerUiClass() {
-
+        server =new Server();
+        serverStatsThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                
+            }
+        });
+        severFlag = false;
+        serverState = true;
         pcPlayerStates = new PieChart();
         text = new Text();
         text0 = new Text();
@@ -116,16 +133,30 @@ public class ServerUiClass extends AnchorPane {
                 + "-fx-background-position: center center;");
         btnServerState.setId("myButton");
 
-    
+        btnServerState.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               if(btnServerState.isSelected()){
+                    server.startServer();
+                    btnServerState.setId("myButton");
+                    serverState=false;
+                    System.out.println("server Start");
+               } else {
+                    server.stopServer();
+                    btnServerState.setId("myButtonOff");
+                    System.out.println("server Off");
+                }
+            }
+        });
 
-        thread= new Thread(() -> {
+        thread = new Thread(() -> {
             try {
-                
+
                 serverSocket = new ServerSocket(5006);
-                while (true){
-                   client= serverSocket.accept();
-                     dis = new DataInputStream(client.getInputStream());
-                     
+                while (true) {
+                    client = serverSocket.accept();
+                    dis = new DataInputStream(client.getInputStream());
+
                     String runTest = dis.readLine();
                     System.out.println(runTest);
 //                    JSONObject ob= new JSONObject (dis);
@@ -136,10 +167,11 @@ public class ServerUiClass extends AnchorPane {
 //                    } catch (JSONException ex) {
 //                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
 //                    }
-                }}
-            catch(IOException e){                    }
-  
-        });
-        thread.start(); 
-}}
+                }
+            } catch (IOException e) {
+            }
 
+        });
+        thread.start();
+    }
+}
