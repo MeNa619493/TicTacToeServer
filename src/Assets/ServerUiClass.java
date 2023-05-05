@@ -6,7 +6,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
-public  class ServerUiClass extends AnchorPane {
+public class ServerUiClass extends AnchorPane {
 
     protected final PieChart pcPlayerStates;
     protected final Text text;
@@ -98,8 +98,8 @@ public  class ServerUiClass extends AnchorPane {
         getChildren().add(text2);
         getChildren().add(NumberOfOnline);
         getChildren().add(NumberOfOffline);
-        
-         setStyle("-fx-background-image: url('file:./src/Assets/bgGp.jpg');"
+
+        setStyle("-fx-background-image: url('file:./src/Assets/bgGp.jpg');"
                 + "-fx-background-size: cover;"
                 + "-fx-background-position: center center;");
         btnServerState.setId("myButton");
