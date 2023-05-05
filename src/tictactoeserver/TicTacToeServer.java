@@ -22,7 +22,8 @@ public class TicTacToeServer extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-        DataAccessLayer da = DataAccessLayer.getInstance(); 
+
+        DataAccessLayer da =DataAccessLayer.getInstance();
         try {
             da.connect();
         } catch (SQLException ex) {

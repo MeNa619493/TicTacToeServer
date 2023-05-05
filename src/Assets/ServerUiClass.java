@@ -9,6 +9,8 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
@@ -17,7 +19,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import utilities.DataAccessLayer;
-import utilities.Player;
+import utilities.Server;
+
 
 public class ServerUiClass extends AnchorPane {
 
@@ -34,13 +37,15 @@ public class ServerUiClass extends AnchorPane {
     PrintStream ps;
     Thread thread ;
     Socket client ;
+    Server server;
     DataAccessLayer database = DataAccessLayer.getInstance();
     private Thread chartThread;
     int onlinePlayersNo = 0;
     int offlinePlayersNo = 0;
 
-    public ServerUiClass() {
 
+    public ServerUiClass() {
+        server =new Server();
         pcPlayerStates = new PieChart();
         text = new Text();
         text0 = new Text();
@@ -125,16 +130,29 @@ public class ServerUiClass extends AnchorPane {
                 + "-fx-background-position: center center;");
         btnServerState.setId("myButton");
 
-    
+        btnServerState.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+               if(btnServerState.isSelected()){
+                    server.startServer();
+                    btnServerState.setId("myButton");
+                    System.out.println("server Start");
+               } else {
+                    server.stopServer();
+                    btnServerState.setId("myButtonOff");
+                    System.out.println("server Off");
+                }
+            }
+        });
 
-        thread= new Thread(() -> {
+        thread = new Thread(() -> {
             try {
-                
+
                 serverSocket = new ServerSocket(5006);
-                while (true){
-                   client= serverSocket.accept();
-                     dis = new DataInputStream(client.getInputStream());
-                     
+                while (true) {
+                    client = serverSocket.accept();
+                    dis = new DataInputStream(client.getInputStream());
+
                     String runTest = dis.readLine();
                     System.out.println(runTest);
 //                    JSONObject ob= new JSONObject (dis);
@@ -145,7 +163,9 @@ public class ServerUiClass extends AnchorPane {
 //                    } catch (JSONException ex) {
 //                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
 //                    }
-                }}
+                }
+          
+                }
             catch(IOException e){                    }
   
         });
@@ -190,3 +210,4 @@ public class ServerUiClass extends AnchorPane {
     }
 }
 
+ 
