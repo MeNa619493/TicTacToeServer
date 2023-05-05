@@ -26,7 +26,7 @@ public class DataAccessLayer {
     String dataBaseUrl = "jdbc:derby://localhost:1527/TicTacToe";
     private static final String TABLE_NAME = "PLAYER";
 
-    public DataAccessLayer() {
+    private DataAccessLayer() {
     }
 
     public static synchronized DataAccessLayer getInstance() {
@@ -50,6 +50,8 @@ public class DataAccessLayer {
         prst.setString(1, p.getUsername());
         prst.setString(2, p.getEmail());
         prst.setString(3, p.getPassword());
+        
+
         isDone = prst.executeUpdate();
         if (isDone > 0) {
             System.out.println("Insert Done");
@@ -77,9 +79,47 @@ public class DataAccessLayer {
             return "Connection Issues";
         }
     }
-
-    public void close() throws SQLException {
-        con.close();
+    
+    public synchronized int getOnlinePlayers( ){
+        int rows = 0;
+        try {
+            prst = con.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE ISACTIVE = TRUE"
+                    ,ResultSet.TYPE_SCROLL_SENSITIVE 
+                    ,ResultSet.CONCUR_READ_ONLY);
+            rs = prst.executeQuery();
+            if (rs.last()){
+                rows = rs.getRow();
+            }
+            return rows;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("catch isactive=true");
+           return -1;
+        }
+    }
+    
+    public synchronized int getOfflinePlayers( ){
+        int rows = 0;
+        try {
+            prst = con.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE ISACTIVE = FALSE"
+                    ,ResultSet.TYPE_SCROLL_SENSITIVE 
+                    ,ResultSet.CONCUR_READ_ONLY);
+            rs = prst.executeQuery();
+            if (rs.last()){
+                rows = rs.getRow();
+            }
+            return rows;
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.out.println("catch isactive=false");
+           return -1;
+        }
+    }
+    
+    public void close() throws SQLException{
+       rs.close();
+       prst.close();
+       con.close();
     }
 
 }
