@@ -21,10 +21,6 @@ public class Server {
     private ServerSocket serverSocket;
 
     public void startServer() {
-        if (listenerThread != null && listenerThread.isAlive()) {
-            return;
-        }
-
         try {
             serverSocket = new ServerSocket(5005);
             listenerThread = new Thread(() -> {
@@ -52,9 +48,6 @@ public class Server {
         try {
             listenerThread.stop();
             serverSocket.close();
-            //if (clientSocket != null) {
-            //    clientSocket.close();
-            //}
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }

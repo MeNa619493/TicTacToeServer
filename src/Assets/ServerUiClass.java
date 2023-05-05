@@ -34,21 +34,11 @@ public class ServerUiClass extends AnchorPane {
     Thread thread;
     Socket client;
     DataAccessLayer database;
-    Thread serverStatsThread;
-    boolean serverState;
     Server server;
-    boolean severFlag;
+    
 
     public ServerUiClass() {
         server =new Server();
-        serverStatsThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                
-            }
-        });
-        severFlag = false;
-        serverState = true;
         pcPlayerStates = new PieChart();
         text = new Text();
         text0 = new Text();
@@ -139,7 +129,6 @@ public class ServerUiClass extends AnchorPane {
                if(btnServerState.isSelected()){
                     server.startServer();
                     btnServerState.setId("myButton");
-                    serverState=false;
                     System.out.println("server Start");
                } else {
                     server.stopServer();
