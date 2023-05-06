@@ -72,7 +72,7 @@ public class DataAccessLayer {
             return "Connection Issues";
         }
     }
-    public synchronized ResultSet executeQuery(){
+    public synchronized void executeQuery(){
     try {
         this.preStmt = con.prepareStatement("Select * from"+TABLE_NAME, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
       // return preStmt.executeQuery();
