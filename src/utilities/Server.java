@@ -5,7 +5,10 @@
  */
 package utilities;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -55,6 +58,7 @@ public class Server {
                         new OnlinePlayer(clientSocket);
                         listOfClientSockets.add(clientSocket);
                         System.out.println("new player is created");   
+
                     } catch (IOException ex) {
 
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -83,6 +87,28 @@ public class Server {
             System.out.print("Error while closing database connection in stopServer");
         } catch (IOException ex) {
             System.out.print("Error while closing server cocket in stopServer");
+        }
+    }
+
+    public void pushAvliableFriend() {
+        ObjectOutputStream out = null;
+        try {
+            DataAccessLayer da = DataAccessLayer.getInstance();
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            out = new ObjectOutputStream(bos);
+            out.writeObject(da.showAvailableFriend());
+            byte[] friendBytes = bos.toByteArray();
+            OutputStream clientOutput = clientSocket.getOutputStream();
+            clientOutput.write(friendBytes);
+            clientOutput.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                out.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }
