@@ -176,15 +176,19 @@ public  class ServerUiClass extends AnchorPane {
                              String check;
                             check = database.validateRegister(email);
                             System.out.println(check);
-                            ps.println(check);
+                            
                              if(check.equals("Registered Successfully")){
-                                    try{
-                                    database.signUp(email,username,password);}
+                              // ps.println("Registered Successfully");
+
+                                 
+                                 System.out.println("hey");
+                                    try{database.signUp(email,username,password);
+                                    }
                                     catch(SQLException e){System.out.println(e.getMessage());}
                                     System.out.println("User is registered now , check database");   
                                     }
                              else if (check.equals("already signed-up")){
-                                     ps.println("already signed-up");
+                                     //ps.println("already signed-up");
             }
                             
                             
