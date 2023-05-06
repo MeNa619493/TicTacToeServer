@@ -157,7 +157,7 @@ public class DataAccessLayer {
             preStmt.setString(2, email);
             preStmt.executeUpdate();
         } catch (SQLException ex) {
-            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
         }
         executeQuery();
     }
