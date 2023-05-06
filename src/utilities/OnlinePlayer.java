@@ -9,6 +9,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,9 +23,14 @@ public class OnlinePlayer extends Thread{
    private DataInputStream dis;
    private PrintStream ps;
    private Socket currentSocket;
+  private StringTokenizer token;
+   DataAccessLayer database;
+
+
     
     public OnlinePlayer(Socket socket){
        loggedin = false;
+       database = DataAccessLayer.getInstance();
        System.out.println("start OnlinePlayer");
        server = Server.getServer();
        try {
@@ -42,4 +50,31 @@ public class OnlinePlayer extends Thread{
            }
        }
    }
+    
+    
+    private void SignUp(){
+        String username = token.nextToken();
+                            String email = token.nextToken();
+                            String password = token.nextToken();
+                            System.out.println(username+" "+email+" "+password);
+                             String check;
+       try {
+           check = database.validateRegister(email);
+           if(check.equals("Registered Successfully")){
+               // ps.println("Registered Successfully");
+
+               database.signUp(email,username,password);
+               
+               System.out.println("User is registered now , check database");   
+
+           }
+           else if (check.equals("already signed-up")){
+                //ps.println("already signed-up");
+            }
+       } catch (Exception ex) {
+           Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
+       }
+                            
+    
+    }
 }

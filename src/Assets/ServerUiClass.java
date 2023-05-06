@@ -7,6 +7,7 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -33,6 +34,8 @@ public class ServerUiClass extends AnchorPane {
     protected final Text text2;
     protected final Text NumberOfOnline;
     protected final Text NumberOfOffline;
+    private StringTokenizer token;
+
    int type ;
     String username;
     String email;
@@ -159,58 +162,7 @@ public class ServerUiClass extends AnchorPane {
             }
         });
         
-        thread= new Thread(() -> {
-            try {
-                
-                serverSocket = new ServerSocket(5006);
-                while (true){
-                   client= serverSocket.accept();
-                     dis = new DataInputStream(client.getInputStream());
-                      String data =dis.readLine();
-                      System.out.println(dis.readLine());
-                      token = new StringTokenizer(data,"####");
-                            String type= token.nextToken();
-
-                            String username = token.nextToken();
-                            email = token.nextToken();
-                            String password = token.nextToken();
-                            System.out.println(username+" "+email+" "+password);
-                             String check;
-                            check = database.validateRegister(email);
-                            System.out.println(check);
-                            
-                             if(check.equals("Registered Successfully")){
-                              // ps.println("Registered Successfully");
-
-                                 
-                                 System.out.println("hey");
-                                    try{database.signUp(email,username,password);
-                                    }
-                                    catch(SQLException e){System.out.println(e.getMessage());}
-                                    System.out.println("User is registered now , check database");   
-                                    }
-                             else if (check.equals("already signed-up")){
-                                     //ps.println("already signed-up");
-            }
-                            
-                            
-                
-                
-                }}
-                     
-                
-            catch(Exception e ){ 
-                System.out.println(e.getMessage());
-            System.out.println("Connection Issues");}
-                    
-                       
-            
-            
-              
-            
-        });
-        thread.start();
-        observeChart();
+              observeChart();
     }
     
     private void observeChart(){
