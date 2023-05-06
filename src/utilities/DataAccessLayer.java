@@ -77,7 +77,7 @@ public class DataAccessLayer {
         this.preStmt = con.prepareStatement("Select * from"+TABLE_NAME, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
       // return preStmt.executeQuery();
     } catch (SQLException ex) {
-        Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+        Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
     }
     //return null;
 }
