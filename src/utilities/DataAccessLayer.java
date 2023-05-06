@@ -12,6 +12,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.derby.jdbc.ClientDriver;
 
 /**
@@ -29,6 +31,12 @@ public class DataAccessLayer {
     private static final String TABLE_NAME = "PLAYER";
 
     private DataAccessLayer() {
+        try {
+            this.connect();
+        } catch (SQLException ex) {
+            System.out.println("Database connection problem");
+            ex.printStackTrace();
+        }
     }
 
     public static synchronized DataAccessLayer getInstance() {
@@ -116,6 +124,46 @@ public class DataAccessLayer {
             return -1;
         }
     }
+    
+    public synchronized void defaultStatus() throws SQLException{
+        makePlayersNotPlaying();
+        makeAllPlayersOffline();
+    }
+    
+    public synchronized void makePlayersNotPlaying(){
+         try {
+            prst = con.prepareStatement("update " + TABLE_NAME + " set isPlay = ? ",
+                    ResultSet.TYPE_SCROLL_SENSITIVE ,ResultSet.CONCUR_UPDATABLE);
+            prst.setString(1, "false");
+            prst.executeUpdate();
+            
+        } catch (SQLException ex) {
+            System.out.println("problem in makePlayersNotPlaying");
+            ex.printStackTrace();
+        }
+    }
+
+    public synchronized void makeAllPlayersOffline(){
+        try {
+            prst = con.prepareStatement("update " + TABLE_NAME + " set isActive = ? ",
+                    ResultSet.TYPE_SCROLL_SENSITIVE ,ResultSet.CONCUR_UPDATABLE);
+            prst.setString(1, "false");
+            prst.executeUpdate();
+            
+        } catch (SQLException ex) {
+            System.out.println("problem in makeAllPlayersOffline");
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    public void close() throws SQLException{
+       defaultStatus();
+       rs.close();
+       prst.close();
+       con.close();
+       instance = null;
+    }
 
     public synchronized List<String> showAvailableFriend() {
         List<String> availableFriends = new ArrayList<>();
@@ -135,10 +183,5 @@ public class DataAccessLayer {
         return availableFriends;
     }
 
-    public void close() throws SQLException {
-        rs.close();
-        prst.close();
-        con.close();
-    }
 
 }

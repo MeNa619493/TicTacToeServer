@@ -8,6 +8,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -42,10 +43,12 @@ public class ServerUiClass extends AnchorPane {
     private Thread chartThread;
     int onlinePlayersNo = 0;
     int offlinePlayersNo = 0;
-
+    int oldOnlinePlayersNo = -1;
+    int oldOfflinePlayersNo = -1;
+    boolean serverState = false;
 
     public ServerUiClass() {
-        server =new Server();
+        server =Server.getServer();
         pcPlayerStates = new PieChart();
         text = new Text();
         text0 = new Text();
@@ -133,8 +136,15 @@ public class ServerUiClass extends AnchorPane {
         btnServerState.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-               if(btnServerState.isSelected()){
-                    server.startServer();
+                serverState = !serverState;
+                pcPlayerStates.setVisible(serverState);
+               if(serverState){
+                    try {
+                        server.startConnection();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    chartThread.resume();
                     btnServerState.setId("myButton");
                     System.out.println("server Start");
                } else {
@@ -179,37 +189,69 @@ public class ServerUiClass extends AnchorPane {
             @Override
             public void run() {
                 while(true){
-                    
+                    if(serverState){
                         ObservableList<PieChart.Data> pieChartData;
                         offlinePlayersNo = database.getOfflinePlayers();
-                        onlinePlayersNo = database.getOnlinePlayers();
+                        if(serverState){
+                            onlinePlayersNo = database.getOnlinePlayers();
+                        } else{
+                            onlinePlayersNo = 0;
+                        }
                         System.out.println("onlinePlayersNo = " + offlinePlayersNo);
                         System.out.println("onlinePlayersNo = " + onlinePlayersNo);
                         pieChartData =
                         FXCollections.observableArrayList(
-                            new PieChart.Data("Offline", offlinePlayersNo),
-                            new PieChart.Data("Online", onlinePlayersNo));
+                            new PieChart.Data("Online", onlinePlayersNo),
+                            new PieChart.Data("Offline", offlinePlayersNo));
 
                         Platform.runLater(() -> {
                             try {
-                                pcPlayerStates.setData(pieChartData);
-                                NumberOfOnline.setText(""+onlinePlayersNo);
-                                NumberOfOffline.setText(""+offlinePlayersNo);
+                                if(oldOfflinePlayersNo != offlinePlayersNo && oldOnlinePlayersNo != onlinePlayersNo){
+                                    oldOfflinePlayersNo = offlinePlayersNo;
+                                    oldOnlinePlayersNo = onlinePlayersNo;
+                                    pcPlayerStates.setData(pieChartData);
+                                }
                             } catch (Exception ex) {
                                 System.out.println("Problem in chart thread");
                                 ex.printStackTrace();
                             }
                         });       
                         try{
-                            Thread.sleep(50000);
+                            chartThread.sleep(1000);
                         }catch(InterruptedException ex){
-
+                            System.out.println("observeChart");
+                            ex.printStackTrace();
                         }
+                    }else{
+                        onlinePlayersNo = 0;
+                        chartThread.suspend();
+                    }
+                    handleTextFields();
                 } 
             }
         });
         chartThread.start();
     }
+    
+    private void handleTextFields(){
+        Platform.runLater(() -> {
+            try {
+                NumberOfOnline.setText(""+onlinePlayersNo);
+                NumberOfOffline.setText(""+offlinePlayersNo);
+            } catch (Exception ex) {
+                System.out.println("Problem in chart thread");
+                ex.printStackTrace();
+            }
+        });
+    }
+    
+    
+    
+  
 }
+
+
+
+
 
  
