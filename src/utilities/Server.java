@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,10 +19,31 @@ import java.util.logging.Logger;
  * @author moham
  */
 public class Server {
-
-    Thread listenerThread;
-    private Socket clientSocket;
-    private ServerSocket serverSocket;
+    private static Server server;
+    public DataAccessLayer database ;
+    private ServerSocket serverSocket ;
+    private Socket clientSocket ;
+    private Thread listenerThread;
+    private ArrayList<Socket> listOfClientSockets = new ArrayList();
+    
+    private Server(){
+        
+    }
+    
+    public static Server getServer(){
+        if(server == null){
+            server = new Server();
+        }
+        return server;
+    }
+    
+    public void startConnection() throws SQLException{
+        database = DataAccessLayer.getInstance();
+        //database.resetStatus();
+        //databaseInstance.disableConnection();
+        //database.selectResultSet();
+        startServer();
+    }
 
     public void startServer() {
         try {
@@ -29,6 +52,9 @@ public class Server {
                 while (true) {
                     try {
                         clientSocket = serverSocket.accept();
+                        new OnlinePlayer(clientSocket);
+                        listOfClientSockets.add(clientSocket);
+                        System.out.println("new player is created");   
                     } catch (IOException ex) {
 
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -49,15 +75,14 @@ public class Server {
     }
 
     public void stopServer() {
-        if (listenerThread == null || !listenerThread.isAlive()) {
-            return;
-        }
-
         try {
+            database.close();
             listenerThread.stop();
             serverSocket.close();
+        } catch (SQLException ex) {
+            System.out.print("Error while closing database connection in stopServer");
         } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.print("Error while closing server cocket in stopServer");
         }
     }
 }
