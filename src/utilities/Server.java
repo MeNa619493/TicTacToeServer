@@ -5,6 +5,7 @@
  */
 package utilities;
 
+import Assets.ServerUiClass;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -31,7 +32,11 @@ public class Server {
     private ArrayList<Socket> listOfClientSockets = new ArrayList();
     
     private Server(){
-        
+        try {
+            startConnection();
+        } catch (SQLException ex) {
+            Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public static Server getServer(){
@@ -77,6 +82,14 @@ public class Server {
             System.out.println("server Error");
             ex.printStackTrace();
         }
+    }
+    
+    public int getOnlineCount(){
+        return database.getOnlinePlayers();
+    }
+    
+    public int getOfflineCount(){
+        return database.getOfflinePlayers();
     }
 
     public void stopServer() {

@@ -157,6 +157,7 @@ public class DataAccessLayer {
     }
     
     public void close() throws SQLException{
+       System.out.println("connection closed");
        defaultStatus();
        rs.close();
        prst.close();

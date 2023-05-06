@@ -2,7 +2,6 @@ package Assets;
 
 
 import java.io.DataInputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,7 +19,6 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import utilities.DataAccessLayer;
 import utilities.Server;
 
 
@@ -46,16 +44,15 @@ public class ServerUiClass extends AnchorPane {
     Thread thread ;
     Socket client ;
     Server server;
-    DataAccessLayer database = DataAccessLayer.getInstance();
     private Thread chartThread;
     int onlinePlayersNo = 0;
     int offlinePlayersNo = 0;
     int oldOnlinePlayersNo = -1;
     int oldOfflinePlayersNo = -1;
-    public static boolean serverState = false;
+    public static boolean serverState = true;
 
     public ServerUiClass() {
-        server =Server.getServer();
+        server = Server.getServer();
         pcPlayerStates = new PieChart();
         text = new Text();
         text0 = new Text();
@@ -146,7 +143,7 @@ public class ServerUiClass extends AnchorPane {
                 serverState = !serverState;
                 pcPlayerStates.setVisible(serverState);
                if(serverState){
-                    try {
+                   try {
                         server.startConnection();
                     } catch (SQLException ex) {
                         Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
@@ -174,12 +171,8 @@ public class ServerUiClass extends AnchorPane {
                 while(true){
                     if(serverState){
                         ObservableList<PieChart.Data> pieChartData;
-                        offlinePlayersNo = database.getOfflinePlayers();
-                        if(serverState){
-                            onlinePlayersNo = database.getOnlinePlayers();
-                        } else{
-                            onlinePlayersNo = 0;
-                        }
+                        offlinePlayersNo = server.getOfflineCount();
+                        onlinePlayersNo = server.getOnlineCount();
                         System.out.println("offlinePlayersNo = " + offlinePlayersNo);
                         System.out.println("onlinePlayersNo = " + onlinePlayersNo);
                         pieChartData =
