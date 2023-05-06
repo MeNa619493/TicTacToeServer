@@ -5,10 +5,18 @@
  */
 package utilities;
 
+import Assets.ServerUiClass;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.List;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +28,9 @@ public class OnlinePlayer extends Thread{
    private DataInputStream dis;
    private PrintStream ps;
    private Socket currentSocket;
+   private String clientData,query;
+   private StringTokenizer token;
+   Thread thread;
     
     public OnlinePlayer(Socket socket){
        loggedin = false;
@@ -42,4 +53,70 @@ public class OnlinePlayer extends Thread{
            }
        }
    }
+    
+     public void run(){
+        if (server!=null){
+            while(currentSocket.isConnected()){
+                try {
+                    clientData = dis.readLine();
+                    if(clientData != null){
+                        System.out.println(clientData);
+                        token = new StringTokenizer(clientData,"####");
+                        query = token.nextToken();
+                        switch(query){
+
+                            case "playerlist":
+                                pushAvliableFriend();
+                                break;
+
+                            default :
+                                break;
+                        }
+                   }
+                } catch (IOException ex) {
+                    System.out.println("Problem in reading from stream in OnlinePlayer");
+                    ex.printStackTrace();
+                    try {
+                        currentSocket.close();
+                        System.out.println("socket closed");
+                    } catch (IOException e) {
+                         System.out.println("Problem in socket closed in OnlinePlayer");
+                         e.printStackTrace();
+                    }
+                    this.stop();
+                }
+            }
+        }
+    }
+     
+     public void pushAvliableFriend() {
+        thread =  new Thread(new Runnable() {
+        @Override
+            public void run() {
+                while(true){
+                    if(ServerUiClass.serverState){
+                        List<String> availableFriends = server.database.showAvailableFriend();
+
+                            for(String name: availableFriends){
+                                ps.println(name+"###");
+                            }
+                            ps.println("null");
+
+                       try {
+                        Thread.sleep(5000);
+                        } catch (InterruptedException ex) {
+                            System.out.println("Error while thread sleep pushAvliableFriend");
+                        }
+                    }else{
+                        ps.println("close");
+                        thread.stop();
+                    }
+                }
+            }
+        });
+        thread.start();
+    }
+     
+     
+     
 }

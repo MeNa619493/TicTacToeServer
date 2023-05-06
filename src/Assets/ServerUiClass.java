@@ -45,7 +45,7 @@ public class ServerUiClass extends AnchorPane {
     int offlinePlayersNo = 0;
     int oldOnlinePlayersNo = -1;
     int oldOfflinePlayersNo = -1;
-    boolean serverState = false;
+    public static boolean serverState = false;
 
     public ServerUiClass() {
         server =Server.getServer();
@@ -154,32 +154,7 @@ public class ServerUiClass extends AnchorPane {
                 }
             }
         });
-
-        thread = new Thread(() -> {
-            try {
-
-                serverSocket = new ServerSocket(5006);
-                while (true) {
-                    client = serverSocket.accept();
-                    dis = new DataInputStream(client.getInputStream());
-
-                    String runTest = dis.readLine();
-                    System.out.println(runTest);
-//                    JSONObject ob= new JSONObject (dis);
-//                    try {
-//                    long type =(long) ob.get("type");
-//                    System.out.println(type);
-//
-//                    } catch (JSONException ex) {
-//                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-                }
-          
-                }
-            catch(IOException e){                    }
-  
-        });
-        thread.start(); 
+ 
         observeChart();
     }
     
@@ -197,7 +172,7 @@ public class ServerUiClass extends AnchorPane {
                         } else{
                             onlinePlayersNo = 0;
                         }
-                        System.out.println("onlinePlayersNo = " + offlinePlayersNo);
+                        System.out.println("offlinePlayersNo = " + offlinePlayersNo);
                         System.out.println("onlinePlayersNo = " + onlinePlayersNo);
                         pieChartData =
                         FXCollections.observableArrayList(
