@@ -49,7 +49,7 @@ public class DataAccessLayer {
         return instance;
     }
 
-    public void connect() throws SQLException {
+    private void connect() throws SQLException {
         DriverManager.registerDriver(new ClientDriver());
         con = DriverManager.getConnection(dataBaseUrl,
                 "root", "root");
@@ -167,12 +167,12 @@ public class DataAccessLayer {
     public synchronized List<String> showAvailableFriend() {
         List<String> availableFriends = new ArrayList<>();
         try {
-            prst = con.prepareStatement("SELECT NAME FROM " + TABLE_NAME + " WHERE ISACTIVE = TRUE AND ISPLAY = FALSE",
+            prst = con.prepareStatement("SELECT USERNAME FROM " + TABLE_NAME + " WHERE ISACTIVE = TRUE AND ISPLAY = FALSE",
                     ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_READ_ONLY);
             rs = prst.executeQuery();
             while (rs.next()) {
-                String friendName = rs.getString("NAME");
+                String friendName = rs.getString("USERNAME");
                 availableFriends.add(friendName);
             }
         } catch (SQLException ex) {

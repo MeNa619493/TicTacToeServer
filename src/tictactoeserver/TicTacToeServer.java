@@ -23,8 +23,6 @@ public class TicTacToeServer extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-       
-
         ServerUiClass root = new ServerUiClass();
         Scene scene = new Scene(root);
         scene.getStylesheets().add("file:./src/Assets/buttonStyle.css");

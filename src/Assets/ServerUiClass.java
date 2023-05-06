@@ -52,7 +52,7 @@ public class ServerUiClass extends AnchorPane {
     int offlinePlayersNo = 0;
     int oldOnlinePlayersNo = -1;
     int oldOfflinePlayersNo = -1;
-    boolean serverState = false;
+    public static boolean serverState = false;
 
     public ServerUiClass() {
         server =Server.getServer();
@@ -161,8 +161,9 @@ public class ServerUiClass extends AnchorPane {
                 }
             }
         });
-        
-              observeChart();
+
+ 
+        observeChart();
     }
     
     private void observeChart(){
@@ -179,7 +180,7 @@ public class ServerUiClass extends AnchorPane {
                         } else{
                             onlinePlayersNo = 0;
                         }
-                        System.out.println("onlinePlayersNo = " + offlinePlayersNo);
+                        System.out.println("offlinePlayersNo = " + offlinePlayersNo);
                         System.out.println("onlinePlayersNo = " + onlinePlayersNo);
                         pieChartData =
                         FXCollections.observableArrayList(
