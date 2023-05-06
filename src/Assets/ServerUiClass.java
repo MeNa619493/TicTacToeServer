@@ -1,67 +1,74 @@
 package Assets;
 
+
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.shape.Arc;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.json.JSONException;
-import org.json.JSONObject;
-import tictactoeserver.TicTacToeServer;
 import utilities.DataAccessLayer;
+import utilities.Server;
 
-public  class ServerUiClass extends AnchorPane {
 
+public class ServerUiClass extends AnchorPane {
+
+    protected final PieChart pcPlayerStates;
     protected final Text text;
     protected final Text text0;
-    protected final Arc onlineArc;
-    protected final Arc OfflineArc;
     protected final ToggleButton btnServerState;
     protected final Text text1;
     protected final Text text2;
     protected final Text NumberOfOnline;
     protected final Text NumberOfOffline;
-    private StringTokenizer token;
-
+   int type ;
+    String username;
+    String email;
+    String password;
     ServerSocket serverSocket;
     DataInputStream dis;
     PrintStream ps;
     Thread thread ;
     Socket client ;
-    DataAccessLayer database;
-    int type ;
-    String username;
-    String email;
-    String password;
+    Server server;
+    DataAccessLayer database = DataAccessLayer.getInstance();
+    private Thread chartThread;
+    int onlinePlayersNo = 0;
+    int offlinePlayersNo = 0;
+    int oldOnlinePlayersNo = -1;
+    int oldOfflinePlayersNo = -1;
+    boolean serverState = false;
 
     public ServerUiClass() {
-        database = DataAccessLayer.getInstance();
-
+        server =Server.getServer();
+        pcPlayerStates = new PieChart();
         text = new Text();
         text0 = new Text();
-        onlineArc = new Arc();
-        OfflineArc = new Arc();
         btnServerState = new ToggleButton();
         text1 = new Text();
         text2 = new Text();
         NumberOfOnline = new Text();
         NumberOfOffline = new Text();
-
         setId("AnchorPane");
         setPrefHeight(600.0);
         setPrefWidth(600.0);
+
+        pcPlayerStates.setLayoutX(146.0);
+        pcPlayerStates.setLayoutY(149.0);
+        pcPlayerStates.setPrefHeight(278.0);
+        pcPlayerStates.setPrefWidth(348.0);
 
         text.setFill(javafx.scene.paint.Color.valueOf("#0070fc"));
         text.setLayoutX(14.0);
@@ -78,28 +85,6 @@ public  class ServerUiClass extends AnchorPane {
         text0.setStrokeWidth(0.0);
         text0.setText("Player State");
         text0.setFont(new Font("System Bold", 24.0));
-
-        onlineArc.setFill(javafx.scene.paint.Color.valueOf("#ff1f1f"));
-        onlineArc.setLayoutX(302.0);
-        onlineArc.setLayoutY(250.0);
-        onlineArc.setLength(270.0);
-        onlineArc.setRadiusX(150.0);
-        onlineArc.setRadiusY(150.0);
-        onlineArc.setStartAngle(45.0);
-        onlineArc.setStroke(javafx.scene.paint.Color.BLACK);
-        onlineArc.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
-        onlineArc.setType(javafx.scene.shape.ArcType.ROUND);
-
-        OfflineArc.setFill(javafx.scene.paint.Color.LIME);
-        OfflineArc.setLayoutX(301.0);
-        OfflineArc.setLayoutY(250.0);
-        OfflineArc.setLength(90.0);
-        OfflineArc.setRadiusX(150.0);
-        OfflineArc.setRadiusY(150.0);
-        OfflineArc.setStartAngle(-45.0);
-        OfflineArc.setStroke(javafx.scene.paint.Color.BLACK);
-        OfflineArc.setStrokeType(javafx.scene.shape.StrokeType.INSIDE);
-        OfflineArc.setType(javafx.scene.shape.ArcType.ROUND);
 
         btnServerState.setGraphicTextGap(1.0);
         btnServerState.setLayoutX(498.0);
@@ -138,25 +123,42 @@ public  class ServerUiClass extends AnchorPane {
         NumberOfOffline.setTextAlignment(javafx.scene.text.TextAlignment.CENTER);
         NumberOfOffline.setFont(new Font("System Bold", 18.0));
 
+        getChildren().add(pcPlayerStates);
         getChildren().add(text);
         getChildren().add(text0);
-        getChildren().add(onlineArc);
-        getChildren().add(OfflineArc);
         getChildren().add(btnServerState);
         getChildren().add(text1);
         getChildren().add(text2);
         getChildren().add(NumberOfOnline);
         getChildren().add(NumberOfOffline);
+
         setStyle("-fx-background-image: url('file:./src/Assets/bgGp.jpg');"
                 + "-fx-background-size: cover;"
                 + "-fx-background-position: center center;");
         btnServerState.setId("myButton");
-    
-    
+
+        btnServerState.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                serverState = !serverState;
+                pcPlayerStates.setVisible(serverState);
+               if(serverState){
+                    try {
+                        server.startConnection();
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    chartThread.resume();
+                    btnServerState.setId("myButton");
+                    System.out.println("server Start");
+               } else {
+                    server.stopServer();
+                    btnServerState.setId("myButtonOff");
+                    System.out.println("server Off");
+                }
+            }
+        });
         
-        
-        
-       
         thread= new Thread(() -> {
             try {
                 
@@ -208,20 +210,72 @@ public  class ServerUiClass extends AnchorPane {
             
         });
         thread.start();
+        observeChart();
+    }
+    
+    private void observeChart(){
+        
+        chartThread = new Thread(new Runnable() { 
+            @Override
+            public void run() {
+                while(true){
+                    if(serverState){
+                        ObservableList<PieChart.Data> pieChartData;
+                        offlinePlayersNo = database.getOfflinePlayers();
+                        if(serverState){
+                            onlinePlayersNo = database.getOnlinePlayers();
+                        } else{
+                            onlinePlayersNo = 0;
+                        }
+                        System.out.println("onlinePlayersNo = " + offlinePlayersNo);
+                        System.out.println("onlinePlayersNo = " + onlinePlayersNo);
+                        pieChartData =
+                        FXCollections.observableArrayList(
+                            new PieChart.Data("Online", onlinePlayersNo),
+                            new PieChart.Data("Offline", offlinePlayersNo));
+
+                        Platform.runLater(() -> {
+                            try {
+                                if(oldOfflinePlayersNo != offlinePlayersNo && oldOnlinePlayersNo != onlinePlayersNo){
+                                    oldOfflinePlayersNo = offlinePlayersNo;
+                                    oldOnlinePlayersNo = onlinePlayersNo;
+                                    pcPlayerStates.setData(pieChartData);
+                                }
+                            } catch (Exception ex) {
+                                System.out.println("Problem in chart thread");
+                                ex.printStackTrace();
+                            }
+                        });       
+                        try{
+                            chartThread.sleep(1000);
+                        }catch(InterruptedException ex){
+                            System.out.println("observeChart");
+                            ex.printStackTrace();
+                        }
+                    }else{
+                        onlinePlayersNo = 0;
+                        chartThread.suspend();
+                    }
+                    handleTextFields();
+                } 
+            }
+        });
+        chartThread.start();
+    }
+    
+    private void handleTextFields(){
+        Platform.runLater(() -> {
+            try {
+                NumberOfOnline.setText(""+onlinePlayersNo);
+                NumberOfOffline.setText(""+offlinePlayersNo);
+            } catch (Exception ex) {
+                System.out.println("Problem in chart thread");
+                ex.printStackTrace();
+            }
+        });
+    }
+    
+    
+    
   
-        
-        
-        
-        
-        
-        
-        
-        
-        
-   
 }
-
-
-
-   }
-
