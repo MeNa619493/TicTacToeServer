@@ -14,7 +14,7 @@ import org.apache.derby.jdbc.ClientDriver;
 
 /**
  *
- * @author Mina
+ * @author Reem
  */
 public class DataAccessLayer {
     private static DataAccessLayer instance = null;
@@ -120,7 +120,7 @@ public class DataAccessLayer {
                 }
             }
         } catch (SQLException ex) {
-            Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DataAccessLayer.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
     }
