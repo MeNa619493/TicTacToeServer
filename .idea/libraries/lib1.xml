@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="lib1">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/run1382031322/lib/derby.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/run1382031322/lib/derbyclient.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/run1382031322/lib/org.json-chargebee-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dist/run1382031322/lib/derbynet.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

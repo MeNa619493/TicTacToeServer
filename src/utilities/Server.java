@@ -23,6 +23,7 @@ import java.util.logging.Logger;
  * @author moham
  */
 public class Server {
+
     private static Server server;
     public DataAccessLayer database ;
     private ServerSocket serverSocket ;
