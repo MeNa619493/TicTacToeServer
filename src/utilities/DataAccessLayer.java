@@ -22,7 +22,7 @@ public class DataAccessLayer {
     private ResultSet rs;
     PreparedStatement prst ;
     int isDone;
-    String dataBaseUrl = "jdbc:derby://localhost:1527/TicTacToe";
+    String dataBaseUrl = "jdbc:derby://localhost:1527/tictactoe2";
     private static final String TABLE_NAME = "PLAYER";
     private DataAccessLayer(){}
     
@@ -41,9 +41,8 @@ public class DataAccessLayer {
         System.out.println("connection is Done");
     }
     
-    public synchronized void  signUp (String username, String email , String password) throws SQLException{
-        String Stmt = "insert into"+ TABLE_NAME+"(USERNAME,EMAIL,PASSWORD) values(?,?,?)";
-        prst= con.prepareStatement(Stmt) ;
+    public synchronized void  signUp (String email, String username , String password) throws SQLException{
+    String Stmt = "insert into "+ TABLE_NAME +" (USERNAME,EMAIL,PASSWORD) values(?,?,?)";        prst= con.prepareStatement(Stmt) ;
         prst.setString(1, username);
         prst.setString(2, email);
         prst.setString(3, password);
@@ -59,13 +58,12 @@ public class DataAccessLayer {
             
     }
      public synchronized String validateRegister(String email)throws Exception{
-        String stmt="select EMAIL from "+TABLE_NAME+ "where EMAIL=?";
-        PreparedStatement pStmt;
+        String stmt="SELECT EMAIL FROM "+TABLE_NAME+ " WHERE EMAIL = ?";
         ResultSet rs;
         
-            pStmt = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            pStmt.setString(1, email);
-            rs = pStmt.executeQuery();
+            prst = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            prst.setString(1, email);
+            rs = prst.executeQuery();
             if(rs.next()){
                 return "already signed-up";
             }

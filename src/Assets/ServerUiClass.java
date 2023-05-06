@@ -155,7 +155,7 @@ public  class ServerUiClass extends AnchorPane {
     
         
         
-       
+        
        
         thread= new Thread(() -> {
             try {
@@ -178,8 +178,9 @@ public  class ServerUiClass extends AnchorPane {
                             System.out.println(check);
                             ps.println(check);
                              if(check.equals("Registered Successfully")){
-                
-                                    database.signUp(username,email,password);
+                                    try{
+                                    database.signUp(email,username,password);}
+                                    catch(SQLException e){System.out.println(e.getMessage());}
                                     System.out.println("User is registered now , check database");   
                                     }
                              else if (check.equals("already signed-up")){
@@ -192,7 +193,8 @@ public  class ServerUiClass extends AnchorPane {
                 }}
                      
                 
-            catch(Exception e){ 
+            catch(Exception e ){ 
+                System.out.println(e.getMessage());
             System.out.println("Connection Issues");}
                     
                        
