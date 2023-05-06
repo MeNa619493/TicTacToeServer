@@ -27,7 +27,7 @@ public class DataAccessLayer {
     private ResultSet rs;
     PreparedStatement prst;
     int isDone;
-    String dataBaseUrl = "jdbc:derby://localhost:1527/tictactoe2";
+    String dataBaseUrl = "jdbc:derby://localhost:1527/tictactoe";
     private static final String TABLE_NAME = "PLAYER";
 
 

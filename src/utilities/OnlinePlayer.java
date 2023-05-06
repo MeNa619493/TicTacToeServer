@@ -100,6 +100,9 @@ public class OnlinePlayer extends Thread{
                             case "playerlist":
                                 pushAvliableFriend();
                                 break;
+                            case "SignUp" :
+                                SignUp();
+                                    
 
                             default :
                                 break;
