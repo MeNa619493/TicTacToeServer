@@ -75,11 +75,11 @@ public class DataAccessLayer {
     public synchronized ResultSet executeQuery(){
     try {
         this.preStmt = con.prepareStatement("Select * from"+TABLE_NAME, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-        return preStmt.executeQuery();
+      // return preStmt.executeQuery();
     } catch (SQLException ex) {
         Logger.getLogger(DataBase.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return null;
+    //return null;
 }
 
     public synchronized Player getPlayer(String email){
