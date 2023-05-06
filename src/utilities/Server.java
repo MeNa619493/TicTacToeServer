@@ -90,25 +90,5 @@ public class Server {
         }
     }
 
-    public void pushAvliableFriend() {
-        ObjectOutputStream out = null;
-        try {
-            DataAccessLayer da = DataAccessLayer.getInstance();
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            out = new ObjectOutputStream(bos);
-            out.writeObject(da.showAvailableFriend());
-            byte[] friendBytes = bos.toByteArray();
-            OutputStream clientOutput = clientSocket.getOutputStream();
-            clientOutput.write(friendBytes);
-            clientOutput.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                out.close();
-            } catch (IOException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
+    
 }

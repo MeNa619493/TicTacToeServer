@@ -22,14 +22,6 @@ public class TicTacToeServer extends Application {
     
     @Override
     public void start(Stage primaryStage) {
-
-        DataAccessLayer da = DataAccessLayer.getInstance();
-        try {
-            da.connect();
-        } catch (SQLException ex) {
-            Logger.getLogger(TicTacToeServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-       
         ServerUiClass root = new ServerUiClass();
         Scene scene = new Scene(root);
         scene.getStylesheets().add("file:./src/Assets/buttonStyle.css");
