@@ -86,6 +86,30 @@ public class OnlinePlayer extends Thread{
                             
     
     }
+        private void SignIn(){
+       
+                            String email = token.nextToken();
+                            String password = token.nextToken();
+                            System.out.println(email+" "+password);
+                             String check;
+       try {
+           check = database.validateLogin(email,password);
+           if(check.equals("Login Successful")){
+              
+               ps.println("Logging Successfully");
+               
+               System.out.println("User is Signed in ");   
+
+           }
+           else if (check.equals("already signed-up")){
+                ps.println("You Registered first");
+            }
+       } catch (Exception ex) {
+           Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
+       }
+                            
+    
+    }
      public void run(){
         if (server!=null){
             while(currentSocket.isConnected()){
@@ -102,7 +126,8 @@ public class OnlinePlayer extends Thread{
                                 break;
                             case "SignUp" :
                                 SignUp();
-                                    
+                              case "SignIn" :
+                                SignIn();   
 
                             default :
                                 break;

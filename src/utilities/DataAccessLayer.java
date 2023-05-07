@@ -57,7 +57,8 @@ public class DataAccessLayer {
     }
     
     public synchronized void  signUp (String email, String username , String password) throws SQLException{
-    String Stmt = "insert into "+ TABLE_NAME +" (USERNAME,EMAIL,PASSWORD) values(?,?,?)";        prst= con.prepareStatement(Stmt) ;
+    String Stmt = "insert into "+ TABLE_NAME +" (USERNAME,EMAIL,PASSWORD) values(?,?,?)";    
+    prst= con.prepareStatement(Stmt) ;
         prst.setString(1, username);
         prst.setString(2, email);
         prst.setString(3, password);
@@ -87,6 +88,33 @@ public class DataAccessLayer {
             }
        
     }
+     public synchronized String validateLogin(String email, String password) throws SQLException {
+    String stmt = "SELECT * FROM " + TABLE_NAME + " WHERE EMAIL = ? AND PASSWORD = ?";
+    ResultSet rs;
+
+    prst = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+    prst.setString(1, email);
+    prst.setString(2, password);
+    rs = prst.executeQuery();
+
+    if (rs.next()) {
+        // Check if the user is already signed in
+        boolean isActive = rs.getBoolean("ISACTIVE");
+        if (isActive) {
+            return "This Email is already signed in";
+        } else {
+            // Set user status to active
+            String updateStmt = "UPDATE " + TABLE_NAME + " SET ISACTIVE = ? WHERE EMAIL = ?";
+            prst = con.prepareStatement(updateStmt);
+            prst.setBoolean(1, true);
+            prst.setString(2, email);
+            prst.executeUpdate();
+            return "Login Successful";
+        }
+    } else {
+        return "Invalid Email or Password";
+    }
+}
 
     public synchronized int getOnlinePlayers() {
         int rows = 0;
