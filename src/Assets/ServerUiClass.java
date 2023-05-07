@@ -5,6 +5,7 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -29,6 +30,12 @@ public class ServerUiClass extends AnchorPane {
     protected final Text text2;
     protected final Text NumberOfOnline;
     protected final Text NumberOfOffline;
+    private StringTokenizer token;
+
+   int type ;
+    String username;
+    String email;
+    String password;
     ServerSocket serverSocket;
     DataInputStream dis;
     PrintStream ps;
@@ -149,7 +156,7 @@ public class ServerUiClass extends AnchorPane {
                 }
             }
         });
-
+        
         observeChart();
     }
 
@@ -212,3 +219,4 @@ public class ServerUiClass extends AnchorPane {
     }
 
 }
+
