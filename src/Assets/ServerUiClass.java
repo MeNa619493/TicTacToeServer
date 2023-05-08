@@ -1,6 +1,5 @@
 package Assets;
 
-
 import java.io.DataInputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
@@ -21,7 +20,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import utilities.Server;
 
-
 public class ServerUiClass extends AnchorPane {
 
     protected final PieChart pcPlayerStates;
@@ -41,8 +39,8 @@ public class ServerUiClass extends AnchorPane {
     ServerSocket serverSocket;
     DataInputStream dis;
     PrintStream ps;
-    Thread thread ;
-    Socket client ;
+    Thread thread;
+    Socket client;
     Server server;
     private Thread chartThread;
     int onlinePlayersNo = 0;
@@ -142,8 +140,8 @@ public class ServerUiClass extends AnchorPane {
             public void handle(ActionEvent event) {
                 serverState = !serverState;
                 pcPlayerStates.setVisible(serverState);
-               if(serverState){
-                   try {
+                if (serverState) {
+                    try {
                         server.startConnection();
                     } catch (SQLException ex) {
                         Logger.getLogger(ServerUiClass.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,38 +149,37 @@ public class ServerUiClass extends AnchorPane {
                     chartThread.resume();
                     btnServerState.setId("myButton");
                     System.out.println("server Start");
-               } else {
+                } else {
                     server.stopServer();
                     btnServerState.setId("myButtonOff");
                     System.out.println("server Off");
                 }
             }
         });
-
- 
+        
         observeChart();
     }
-    
-    private void observeChart(){
-        
-        chartThread = new Thread(new Runnable() { 
+
+    private void observeChart() {
+
+        chartThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true){
-                    if(serverState){
+                while (true) {
+                    if (serverState) {
                         ObservableList<PieChart.Data> pieChartData;
                         offlinePlayersNo = server.getOfflineCount();
                         onlinePlayersNo = server.getOnlineCount();
                         System.out.println("offlinePlayersNo = " + offlinePlayersNo);
                         System.out.println("onlinePlayersNo = " + onlinePlayersNo);
-                        pieChartData =
-                        FXCollections.observableArrayList(
-                            new PieChart.Data("Online", onlinePlayersNo),
-                            new PieChart.Data("Offline", offlinePlayersNo));
+                        pieChartData
+                                = FXCollections.observableArrayList(
+                                        new PieChart.Data("Online", onlinePlayersNo),
+                                        new PieChart.Data("Offline", offlinePlayersNo));
 
                         Platform.runLater(() -> {
                             try {
-                                if(oldOfflinePlayersNo != offlinePlayersNo && oldOnlinePlayersNo != onlinePlayersNo){
+                                if (oldOfflinePlayersNo != offlinePlayersNo || oldOnlinePlayersNo != onlinePlayersNo) {
                                     oldOfflinePlayersNo = offlinePlayersNo;
                                     oldOnlinePlayersNo = onlinePlayersNo;
                                     pcPlayerStates.setData(pieChartData);
@@ -191,37 +188,35 @@ public class ServerUiClass extends AnchorPane {
                                 System.out.println("Problem in chart thread");
                                 ex.printStackTrace();
                             }
-                        });       
-                        try{
+                        });
+                        try {
                             chartThread.sleep(1000);
-                        }catch(InterruptedException ex){
+                        } catch (InterruptedException ex) {
                             System.out.println("observeChart");
                             ex.printStackTrace();
                         }
-                    }else{
+                    } else {
                         onlinePlayersNo = 0;
                         chartThread.suspend();
                     }
                     handleTextFields();
-                } 
+                }
             }
         });
         chartThread.start();
     }
-    
-    private void handleTextFields(){
+
+    private void handleTextFields() {
         Platform.runLater(() -> {
             try {
-                NumberOfOnline.setText(""+onlinePlayersNo);
-                NumberOfOffline.setText(""+offlinePlayersNo);
+                NumberOfOnline.setText("" + onlinePlayersNo);
+                NumberOfOffline.setText("" + offlinePlayersNo);
             } catch (Exception ex) {
                 System.out.println("Problem in chart thread");
                 ex.printStackTrace();
             }
         });
     }
-    
-    
-    
-  
+
 }
+
