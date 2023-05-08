@@ -82,7 +82,7 @@ public class OnlinePlayer extends Thread {
                                 pushAvliableFriend();
                                 break;
                             case "request":
-                                //requestPlaying();
+                                requestPlaying();
                                 break;
                             case "accept":
                                 //acceptChallenge();
@@ -196,6 +196,11 @@ public class OnlinePlayer extends Thread {
 
         }
 
+    }
+    public void requestPlaying(){
+        String Player1=token.nextToken();
+        String Player2=token.nextToken();
+        System.out.println(Player1+","+Player2);
     }
 
 }
