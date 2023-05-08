@@ -12,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.derby.jdbc.ClientDriver;
 
 /**
@@ -63,16 +61,16 @@ public class DataAccessLayer {
         prst.setString(3, password);
         isDone= prst.executeUpdate();
             if(isDone>0) 
-            {System.out.println("Insert Done");
+            {
+                System.out.println("Insert Done");
             }
             else
-            {System.out.println("Cann't insert");
-            }
-    
-    
-            
+            {
+                System.out.println("Cann't insert");
+            }       
     }
-     public synchronized String validateRegister(String email)throws Exception{
+    
+    public synchronized String validateRegister(String email)throws Exception{
         String stmt="SELECT EMAIL FROM "+TABLE_NAME+ " WHERE EMAIL = ?";
         ResultSet rs;
         
@@ -84,8 +82,7 @@ public class DataAccessLayer {
                 return "already signed-up";
             } else {
                 return "Registered Successfully";
-            }
-       
+            }     
     }
 
     public synchronized int getOnlinePlayers() {
@@ -177,10 +174,27 @@ public class DataAccessLayer {
                 availableFriends.add(friendName);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error retrieving available friends");
+            ex.printStackTrace();
         }
         return availableFriends;
+    }
+    
+    public synchronized void changeStateOfTwoPlayingPlayers(String player1, String player2){
+        setIsPlaying(true,player1);
+        setIsPlaying(true,player2);
+    }
+    
+    public synchronized void setIsPlaying(boolean state,String username){
+        try {
+            prst = con.prepareStatement("UPDATE " + TABLE_NAME + " SET ISPLAY = ? WHERE USERNAME = ?");
+            prst.setBoolean(1, state);
+            prst.setString(2, username);
+            prst.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("problem in setIsPlaying");
+            ex.printStackTrace();
+        }
     }
 
 

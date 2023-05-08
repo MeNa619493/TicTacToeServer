@@ -44,9 +44,7 @@ public class Server {
     
     public void startConnection() throws SQLException{
         database = DataAccessLayer.getInstance();
-        //database.resetStatus();
-        //databaseInstance.disableConnection();
-        //database.selectResultSet();
+        database.defaultStatus();
         startServer();
     }
 
@@ -87,6 +85,16 @@ public class Server {
     public int getOfflineCount(){
         return database.getOfflinePlayers();
     }
+    
+    public void closeClientsSockets(){
+        try{
+            for(Socket clientSocket: listOfClientSockets){
+                clientSocket.close();
+            }
+        }catch(IOException ex) {
+            System.out.print("problem in closing clients sockets in closeClientsSockets");
+        }  
+    }
 
     public void stopServer() {
         try {
@@ -94,9 +102,9 @@ public class Server {
             listenerThread.stop();
             serverSocket.close();
         } catch (SQLException ex) {
-            System.out.print("Error while closing database connection in stopServer");
+            System.out.print("problem in closing database connection in stopServer");
         } catch (IOException ex) {
-            System.out.print("Error while closing server cocket in stopServer");
+            System.out.print("problem in closing server sockets in stopServer");
         }
     }
 

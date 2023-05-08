@@ -64,12 +64,21 @@ public class OnlinePlayer extends Thread {
                         token = new StringTokenizer(clientData, "####");
                         query = token.nextToken();
                         switch (query) {
-
+                            case "SignUp":
+                                SignUp();
+                                break;
                             case "playerlist":
                                 pushAvliableFriend();
                                 break;
-                            case "SignUp":
-                                SignUp();
+                            case "request":
+                                //requestPlaying();
+                                break;
+                            case "accept":
+                                //acceptChallenge();
+                                break;
+                            case "decline":
+                                //refusedChallenge();
+                                break;
 
                             default:
                                 break;
@@ -141,5 +150,7 @@ public class OnlinePlayer extends Thread {
         });
         thread.start();
     }
+
+
 
 }
