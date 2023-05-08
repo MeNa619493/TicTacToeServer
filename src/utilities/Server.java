@@ -78,6 +78,10 @@ public class Server {
         }
     }
     
+    public int getOnline(){
+        return database.getOnlinePlayers();
+    }
+    
     public int getOnlineCount(){
         return database.getOnlinePlayers();
     }

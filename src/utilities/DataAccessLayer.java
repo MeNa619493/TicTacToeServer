@@ -93,18 +93,13 @@ public class DataAccessLayer {
 
         if (rs.next()) {
             // Check if the user is already signed in
-            boolean isActive = rs.getBoolean("ISACTIVE");
-            if (isActive) {
-                return "This Email is already signed in";
-            } else {
-                // Set user status to active
-                String updateStmt = "UPDATE " + TABLE_NAME + " SET ISACTIVE = ? WHERE EMAIL = ?";
-                prst = con.prepareStatement(updateStmt);
-                prst.setBoolean(1, true);
-                prst.setString(2, email);
-                prst.executeUpdate();
-                return "Login Successful";
-            }
+            // Set user status to active
+            String updateStmt = "UPDATE " + TABLE_NAME + " SET ISACTIVE = ? WHERE EMAIL = ?";
+            prst = con.prepareStatement(updateStmt);
+            prst.setBoolean(1, true);
+            prst.setString(2, email);
+            prst.executeUpdate();
+            return "Login Successful";
         } else {
             return "Invalid Email or Password";
         }
