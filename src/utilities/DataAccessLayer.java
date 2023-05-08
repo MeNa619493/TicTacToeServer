@@ -211,5 +211,27 @@ public class DataAccessLayer {
         return availableFriends;
     }
 
+ public synchronized Player getPlayer(String email){
+        String stmt = "select * from Player where email=?";
+        PreparedStatement pStmt;
+        Player player;
+        try {
+            pStmt = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            pStmt.setString(1,email);
+            rs = pStmt.executeQuery();
+            if(rs.next()){
+              String userName=  rs.getString(1);
+               String password =rs.getString(3);
+              boolean isActive = rs.getBoolean(4);
+                boolean isPlay =rs.getBoolean(5);
+              int score =rs.getInt(6);
+                 player=new Player(userName,password,email);
 
+                return player;
+            }
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return null;
+    }
 }

@@ -13,6 +13,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import java.util.List;
 
@@ -35,6 +36,11 @@ public class OnlinePlayer extends Thread{
    private StringTokenizer token;
    Thread thread;
    DataAccessLayer database;
+   ArrayList<OnlinePlayer> OnlineUsers = new ArrayList();
+   private String username;
+   private String password;
+   private String email ;
+   
 
     
     public OnlinePlayer(Socket socket){
@@ -60,6 +66,20 @@ public class OnlinePlayer extends Thread{
        }
    }
     
+    private void sendRequest (){
+        String secondPlayer = token.nextToken();
+        String player1 = token.nextToken();
+        for (OnlinePlayer user :OnlineUsers ){
+            if(user.email.equals(secondPlayer)){
+                user.ps.println("requestPlaying");
+                user.ps.println(secondPlayer);
+            
+            }
+        
+        }
+    
+    
+    }
     
     private void SignUp(){
         String username = token.nextToken();
