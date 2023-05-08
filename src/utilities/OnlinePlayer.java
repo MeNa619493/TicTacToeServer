@@ -10,6 +10,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -30,6 +31,10 @@ public class OnlinePlayer extends Thread {
     private StringTokenizer token;
     Thread thread;
     DataAccessLayer database;
+    ArrayList<OnlinePlayer> OnlineUsers = new ArrayList();
+    private String username;
+    private String password;
+    private String email;
 
     public OnlinePlayer(Socket socket) {
         loggedin = false;
@@ -45,18 +50,18 @@ public class OnlinePlayer extends Thread {
             System.out.println("problem in streams OnlinePlayer");
             ex.printStackTrace();
             // alert 
-            try {
-                socket.close();
-            } catch (IOException e) {
-                System.out.println("problem in close socket in case IOException OnlinePlayer");
-                e.printStackTrace();
-            }
-        }
-    }
+           try {
+               socket.close();
+           } catch (IOException e) {
+               System.out.println("problem in close socket in case IOException OnlinePlayer");
+               e.printStackTrace();
+           }
+       }
+   }
 
-    public void run() {
-        if (server != null) {
-            while (currentSocket.isConnected()) {
+    public void run(){
+        if (server!=null){
+            while(currentSocket.isConnected()){
                 try {
                     clientData = dis.readLine();
                     if (clientData != null) {
@@ -64,6 +69,9 @@ public class OnlinePlayer extends Thread {
                         token = new StringTokenizer(clientData, "####");
                         query = token.nextToken();
                         switch (query) {
+                            case "SignIn" :
+                                SignIn(); 
+                                break;
                             case "SignUp":
                                 SignUp();
                                 break;
@@ -79,6 +87,7 @@ public class OnlinePlayer extends Thread {
                             case "decline":
                                 //refusedChallenge();
                                 break;
+                                
 
                             default:
                                 break;
@@ -100,6 +109,29 @@ public class OnlinePlayer extends Thread {
         }
     }
 
+    private void SignIn() {
+
+        String email = token.nextToken();
+        String password = token.nextToken();
+        System.out.println(email + " " + password);
+        String check;
+        try {
+            check = database.validateLogin(email, password);
+            if (check.equals("Login Successful")) {
+
+                ps.println("Logging Successfully");
+
+                System.out.println("User is Signed in ");
+
+            } else if (check.equals("already signed-up")) {
+                ps.println("You Registered first");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
     private void SignUp() {
         String username = token.nextToken();
         String email = token.nextToken();
@@ -116,7 +148,7 @@ public class OnlinePlayer extends Thread {
                 System.out.println("User is registered now , check database");
 
             } else if (check.equals("already signed-up")) {
-                //ps.println("already signed-up");
+                // ps.println("already signed-up");
             }
         } catch (Exception ex) {
             Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
@@ -151,6 +183,18 @@ public class OnlinePlayer extends Thread {
         thread.start();
     }
 
+    private void sendRequest() {
+        String secondPlayer = token.nextToken();
+        String player1 = token.nextToken();
+        for (OnlinePlayer user : OnlineUsers) {
+            if (user.email.equals(secondPlayer)) {
+                user.ps.println("requestPlaying");
+                user.ps.println(secondPlayer);
 
+            }
+
+        }
+
+    }
 
 }
