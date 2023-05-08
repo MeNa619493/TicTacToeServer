@@ -6,17 +6,12 @@
 package utilities;
 
 import Assets.ServerUiClass;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
-
 import java.util.List;
-
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -61,46 +56,9 @@ public class OnlinePlayer extends Thread {
             } catch (IOException e) {
                 System.out.println("problem in close socket in case IOException OnlinePlayer");
                 e.printStackTrace();
-            }
-        }
-    }
-
-    private void sendRequest() {
-        String secondPlayer = token.nextToken();
-        String player1 = token.nextToken();
-        for (OnlinePlayer user : OnlineUsers) {
-            if (user.email.equals(secondPlayer)) {
-                user.ps.println("requestPlaying");
-                user.ps.println(secondPlayer);
 
             }
-
         }
-
-    }
-
-    private void SignUp() {
-        String username = token.nextToken();
-        String email = token.nextToken();
-        String password = token.nextToken();
-        System.out.println(username + " " + email + " " + password);
-        String check;
-        try {
-            check = database.validateRegister(email);
-            if (check.equals("Registered Successfully")) {
-                ps.println("success");
-
-                database.signUp(email, username, password);
-
-                System.out.println("User is registered now , check database");
-
-            } else if (check.equals("already signed-up")) {
-                ps.println("already signed-up");
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
     }
 
     public void run() {
@@ -114,11 +72,24 @@ public class OnlinePlayer extends Thread {
                         query = token.nextToken();
                         switch (query) {
 
-                            case "playerlist":
-                                pushAvliableFriend();
+                            case "SignIn":
+                                SignIn();
                                 break;
                             case "SignUp":
                                 SignUp();
+                                break;
+                            case "playerlist":
+                                pushAvliableFriend();
+                                break;
+                            case "request":
+                                //requestPlaying();
+                                break;
+                            case "accept":
+                                //acceptChallenge();
+                                break;
+                            case "decline":
+                                //refusedChallenge();
+                                break;
 
                             default:
                                 break;
@@ -137,6 +108,50 @@ public class OnlinePlayer extends Thread {
                     this.stop();
                 }
             }
+        }
+    }
+
+
+    private void SignIn() {
+        String email = token.nextToken();
+        String password = token.nextToken();
+        System.out.println(email + " " + password);
+        String check;
+        try {
+            check = database.validateLogin(email, password);
+            if (check.equals("Login Successful")) {
+                ps.println("Login Successful");
+                System.out.println("User is Signed in ");
+                String username = server.getUsername(email);
+                ps.println(username);
+            } else if (check.equals("Invalid Email or Password")) {
+                ps.println("Invalid Email or Password");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void SignUp() {
+        String username = token.nextToken();
+        String email = token.nextToken();
+        String password = token.nextToken();
+        System.out.println(username + " " + email + " " + password);
+        String check;
+        try {
+            check = database.validateRegister(email);
+            if (check.equals("Registered Successfully")) {
+                ps.println("Registered Successfully");
+
+                database.signUp(email, username, password);
+
+                System.out.println("User is registered now , check database");
+
+            } else if (check.equals("already signed-up")) {
+                ps.println("already signed-up");
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -166,6 +181,21 @@ public class OnlinePlayer extends Thread {
             }
         });
         thread.start();
+    }
+
+
+    private void sendRequest() {
+        String secondPlayer = token.nextToken();
+        String player1 = token.nextToken();
+        for (OnlinePlayer user : OnlineUsers) {
+            if (user.email.equals(secondPlayer)) {
+                user.ps.println("requestPlaying");
+                user.ps.println(secondPlayer);
+
+            }
+
+        }
+
     }
 
 }

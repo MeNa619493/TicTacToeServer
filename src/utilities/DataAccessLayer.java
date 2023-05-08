@@ -12,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.derby.jdbc.ClientDriver;
 
 /**
@@ -29,7 +27,6 @@ public class DataAccessLayer {
     int isDone;
     String dataBaseUrl = "jdbc:derby://localhost:1527/tictactoe";
     private static final String TABLE_NAME = "PLAYER";
-
 
     private DataAccessLayer() {
         try {
@@ -55,37 +52,57 @@ public class DataAccessLayer {
                 "root", "root");
         System.out.println("connection is Done");
     }
-    
-    public synchronized void  signUp (String email, String username , String password) throws SQLException{
-    String Stmt = "insert into "+ TABLE_NAME +" (USERNAME,EMAIL,PASSWORD) values(?,?,?)";        prst= con.prepareStatement(Stmt) ;
+
+    public synchronized void signUp(String email, String username, String password) throws SQLException {
+        String Stmt = "insert into " + TABLE_NAME + " (USERNAME,EMAIL,PASSWORD) values(?,?,?)";
+        prst = con.prepareStatement(Stmt);
         prst.setString(1, username);
         prst.setString(2, email);
         prst.setString(3, password);
-        isDone= prst.executeUpdate();
-            if(isDone>0) 
-            {System.out.println("Insert Done");
-            }
-            else
-            {System.out.println("Cann't insert");
-            }
-    
-    
-            
+        isDone = prst.executeUpdate();
+        if (isDone > 0) {
+            System.out.println("Insert Done");
+        } else {
+            System.out.println("Cann't insert");
+        }
     }
-     public synchronized String validateRegister(String email)throws Exception{
-        String stmt="SELECT EMAIL FROM "+TABLE_NAME+ " WHERE EMAIL = ?";
-        ResultSet rs;
-        
-            prst = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            prst.setString(1, email);
-            rs = prst.executeQuery();
-            if(rs.next()){
 
-                return "already signed-up";
-            } else {
-                return "Registered Successfully";
-            }
-       
+    public synchronized String validateRegister(String email) throws Exception {
+        String stmt = "SELECT EMAIL FROM " + TABLE_NAME + " WHERE EMAIL = ?";
+        ResultSet rs;
+
+        prst = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        prst.setString(1, email);
+        rs = prst.executeQuery();
+        if (rs.next()) {
+
+            return "already signed-up";
+        } else {
+            return "Registered Successfully";
+        }
+    }
+
+    public synchronized String validateLogin(String email, String password) throws SQLException {
+        String stmt = "SELECT * FROM " + TABLE_NAME + " WHERE EMAIL = ? AND PASSWORD = ?";
+        ResultSet rs;
+
+        prst = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        prst.setString(1, email);
+        prst.setString(2, password);
+        rs = prst.executeQuery();
+
+        if (rs.next()) {
+            // Check if the user is already signed in
+            // Set user status to active
+            String updateStmt = "UPDATE " + TABLE_NAME + " SET ISACTIVE = ? WHERE EMAIL = ?";
+            prst = con.prepareStatement(updateStmt);
+            prst.setBoolean(1, true);
+            prst.setString(2, email);
+            prst.executeUpdate();
+            return "Login Successful";
+        } else {
+            return "Invalid Email or Password";
+        }
     }
 
     public synchronized int getOnlinePlayers() {
@@ -123,46 +140,46 @@ public class DataAccessLayer {
             return -1;
         }
     }
-    
-    public synchronized void defaultStatus() throws SQLException{
+
+    public synchronized void defaultStatus() throws SQLException {
         makePlayersNotPlaying();
         makeAllPlayersOffline();
     }
-    
-    public synchronized void makePlayersNotPlaying(){
-         try {
+
+    public synchronized void makePlayersNotPlaying() {
+        try {
             prst = con.prepareStatement("update " + TABLE_NAME + " set isPlay = ? ",
-                    ResultSet.TYPE_SCROLL_SENSITIVE ,ResultSet.CONCUR_UPDATABLE);
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             prst.setString(1, "false");
             prst.executeUpdate();
-            
+
         } catch (SQLException ex) {
             System.out.println("problem in makePlayersNotPlaying");
             ex.printStackTrace();
         }
     }
 
-    public synchronized void makeAllPlayersOffline(){
+    public synchronized void makeAllPlayersOffline() {
         try {
             prst = con.prepareStatement("update " + TABLE_NAME + " set isActive = ? ",
-                    ResultSet.TYPE_SCROLL_SENSITIVE ,ResultSet.CONCUR_UPDATABLE);
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             prst.setString(1, "false");
             prst.executeUpdate();
-            
+
         } catch (SQLException ex) {
             System.out.println("problem in makeAllPlayersOffline");
             ex.printStackTrace();
         }
-        
+
     }
-    
-    public void close() throws SQLException{
-       System.out.println("connection closed");
-       defaultStatus();
-       rs.close();
-       prst.close();
-       con.close();
-       instance = null;
+
+    public void close() throws SQLException {
+        System.out.println("connection closed");
+        defaultStatus();
+        rs.close();
+        prst.close();
+        con.close();
+        instance = null;
     }
 
     public synchronized List<String> showAvailableFriend() {
@@ -177,32 +194,41 @@ public class DataAccessLayer {
                 availableFriends.add(friendName);
             }
         } catch (SQLException ex) {
-            ex.printStackTrace();
             System.out.println("Error retrieving available friends");
+            ex.printStackTrace();
         }
         return availableFriends;
     }
 
- public synchronized Player getPlayer(String email){
-        String stmt = "select * from Player where email=?";
-        PreparedStatement pStmt;
-        Player player;
-        try {
-            pStmt = con.prepareStatement(stmt, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
-            pStmt.setString(1,email);
-            rs = pStmt.executeQuery();
-            if(rs.next()){
-              String userName=  rs.getString(1);
-               String password =rs.getString(3);
-              boolean isActive = rs.getBoolean(4);
-                boolean isPlay =rs.getBoolean(5);
-              int score =rs.getInt(6);
-                 player=new Player(userName,password,email);
+    public synchronized void changeStateOfTwoPlayingPlayers(String player1, String player2) {
+        setIsPlaying(true, player1);
+        setIsPlaying(true, player2);
+    }
 
-                return player;
+    public synchronized void setIsPlaying(boolean state, String username) {
+        try {
+            prst = con.prepareStatement("UPDATE " + TABLE_NAME + " SET ISPLAY = ? WHERE USERNAME = ?");
+            prst.setBoolean(1, state);
+            prst.setString(2, username);
+            prst.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("problem in setIsPlaying");
+            ex.printStackTrace();
+        }
+    }
+
+    public synchronized String getUsername(String email) {
+        try {
+            prst = con.prepareStatement("SELECT USERNAME FROM " + TABLE_NAME + " WHERE EMAIL=?",
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            prst.setString(1, email);
+            rs = prst.executeQuery();
+            if (rs.next()) {
+                return rs.getString(1);
             }
         } catch (SQLException ex) {
-            System.out.println(ex.getMessage());
+            System.out.println("problem in getUsername");
+            ex.printStackTrace();
         }
         return null;
     }
