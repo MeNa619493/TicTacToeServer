@@ -78,12 +78,20 @@ public class Server {
         }
     }
     
+    public int getOnline(){
+        return database.getOnlinePlayers();
+    }
+    
     public int getOnlineCount(){
         return database.getOnlinePlayers();
     }
     
     public int getOfflineCount(){
         return database.getOfflinePlayers();
+    }
+    
+    public String getUsername(String email){
+        return database.getUsername(email);
     }
     
     public void closeClientsSockets(){

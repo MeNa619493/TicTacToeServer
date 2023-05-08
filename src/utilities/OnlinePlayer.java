@@ -50,18 +50,18 @@ public class OnlinePlayer extends Thread {
             System.out.println("problem in streams OnlinePlayer");
             ex.printStackTrace();
             // alert 
-           try {
-               socket.close();
-           } catch (IOException e) {
-               System.out.println("problem in close socket in case IOException OnlinePlayer");
-               e.printStackTrace();
-           }
-       }
-   }
+            try {
+                socket.close();
+            } catch (IOException e) {
+                System.out.println("problem in close socket in case IOException OnlinePlayer");
+                e.printStackTrace();
+            }
+        }
+    }
 
-    public void run(){
-        if (server!=null){
-            while(currentSocket.isConnected()){
+    public void run() {
+        if (server != null) {
+            while (currentSocket.isConnected()) {
                 try {
                     clientData = dis.readLine();
                     if (clientData != null) {
@@ -69,8 +69,8 @@ public class OnlinePlayer extends Thread {
                         token = new StringTokenizer(clientData, "####");
                         query = token.nextToken();
                         switch (query) {
-                            case "SignIn" :
-                                SignIn(); 
+                            case "SignIn":
+                                SignIn();
                                 break;
                             case "SignUp":
                                 SignUp();
@@ -87,7 +87,6 @@ public class OnlinePlayer extends Thread {
                             case "decline":
                                 //refusedChallenge();
                                 break;
-                                
 
                             default:
                                 break;
@@ -110,7 +109,6 @@ public class OnlinePlayer extends Thread {
     }
 
     private void SignIn() {
-
         String email = token.nextToken();
         String password = token.nextToken();
         System.out.println(email + " " + password);
@@ -118,18 +116,16 @@ public class OnlinePlayer extends Thread {
         try {
             check = database.validateLogin(email, password);
             if (check.equals("Login Successful")) {
-
-                ps.println("Logging Successfully");
-
+                ps.println("Login Successful");
                 System.out.println("User is Signed in ");
-
-            } else if (check.equals("already signed-up")) {
-                ps.println("You Registered first");
+                String username = server.getUsername(email);
+                ps.println(username);
+            } else if (check.equals("Invalid Email or Password")) {
+                ps.println("Invalid Email or Password");
             }
         } catch (Exception ex) {
             Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
     private void SignUp() {
@@ -141,14 +137,14 @@ public class OnlinePlayer extends Thread {
         try {
             check = database.validateRegister(email);
             if (check.equals("Registered Successfully")) {
-                // ps.println("Registered Successfully");
+                ps.println("Registered Successfully");
 
                 database.signUp(email, username, password);
 
                 System.out.println("User is registered now , check database");
 
             } else if (check.equals("already signed-up")) {
-                // ps.println("already signed-up");
+                ps.println("already signed-up");
             }
         } catch (Exception ex) {
             Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
