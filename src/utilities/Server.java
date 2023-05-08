@@ -86,6 +86,10 @@ public class Server {
         return database.getOfflinePlayers();
     }
     
+    public String getUsername(String email){
+        return database.getUsername(email);
+    }
+    
     public void closeClientsSockets(){
         try{
             for(Socket clientSocket: listOfClientSockets){
