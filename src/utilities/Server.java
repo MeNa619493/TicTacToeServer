@@ -6,7 +6,11 @@
 package utilities;
 
 import Assets.ServerUiClass;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Inet4Address;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
@@ -44,7 +48,9 @@ public class Server {
     
     public void startConnection() throws SQLException{
         database = DataAccessLayer.getInstance();
-        database.defaultStatus();
+        //database.resetStatus();
+        //databaseInstance.disableConnection();
+        //database.selectResultSet();
         startServer();
     }
 
@@ -85,16 +91,6 @@ public class Server {
     public int getOfflineCount(){
         return database.getOfflinePlayers();
     }
-    
-    public void closeClientsSockets(){
-        try{
-            for(Socket clientSocket: listOfClientSockets){
-                clientSocket.close();
-            }
-        }catch(IOException ex) {
-            System.out.print("problem in closing clients sockets in closeClientsSockets");
-        }  
-    }
 
     public void stopServer() {
         try {
@@ -102,9 +98,9 @@ public class Server {
             listenerThread.stop();
             serverSocket.close();
         } catch (SQLException ex) {
-            System.out.print("problem in closing database connection in stopServer");
+            System.out.print("Error while closing database connection in stopServer");
         } catch (IOException ex) {
-            System.out.print("problem in closing server sockets in stopServer");
+            System.out.print("Error while closing server cocket in stopServer");
         }
     }
 
