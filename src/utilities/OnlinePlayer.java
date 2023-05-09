@@ -6,8 +6,11 @@
 package utilities;
 
 import Assets.ServerUiClass;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -29,9 +32,12 @@ class OnlinePlayer extends Thread {
     private Socket currentSocket;
     private String clientData, query;
     private StringTokenizer token;
+    OutputStream outputStream;
+    OutputStreamWriter outputStreamWriter;
+    BufferedWriter bufferedWriter;
     Thread thread;
     DataAccessLayer database;
-    static ArrayList<OnlinePlayer> OnlineUsers =  new ArrayList();
+    static Vector<OnlinePlayer> OnlineUsers = new Vector();
     private String username;
     private String password;
     private String email;
@@ -41,9 +47,13 @@ class OnlinePlayer extends Thread {
         System.out.println("start OnlinePlayer");
         server = Server.getServer();
         try {
-            dis = new DataInputStream(socket.getInputStream());
-            ps = new PrintStream(socket.getOutputStream());
             currentSocket = socket;
+            dis = new DataInputStream(currentSocket.getInputStream());
+            ps = new PrintStream(currentSocket.getOutputStream());
+            outputStream = socket.getOutputStream();
+            outputStreamWriter = new OutputStreamWriter(outputStream);
+            bufferedWriter = new BufferedWriter(outputStreamWriter);
+           
             this.start();
         } catch (IOException ex) {
             System.out.println("problem in streams OnlinePlayer");
@@ -119,10 +129,11 @@ class OnlinePlayer extends Thread {
                 OnlineUsers.add(this);
 
                 ps.println("Login Successful");
-                System.out.println("User is Signed in ");
-                username = server.getUsername(email);
-                ps.println(username);
 
+                username = server.getUsername(email);
+                System.out.println("User is Signed in " + username);
+                System.out.println(currentSocket.getLocalSocketAddress().toString());
+                ps.println(username);
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
             }
@@ -165,7 +176,8 @@ class OnlinePlayer extends Thread {
                         for (String name : availableFriends) {
                             ps.println(name + "###");
                         }
-                        ps.println("null");
+                        ps.println("finished");
+                        ps.flush();
 
                         try {
                             Thread.sleep(5000);
@@ -190,13 +202,12 @@ class OnlinePlayer extends Thread {
 
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(secondPlayer)) {
-                System.out.println(secondPlayer);
+                System.out.println("the opponent is " + user.username);
+                System.out.println(user.currentSocket.getLocalSocketAddress().toString());
                 user.ps.println("requestPlaying");
                 user.ps.println(secondPlayer);
             }
         }
     }
-    
-    
 
 }
