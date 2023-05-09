@@ -170,8 +170,8 @@ public class ServerUiClass extends AnchorPane {
                         ObservableList<PieChart.Data> pieChartData;
                         offlinePlayersNo = server.getOfflineCount();
                         onlinePlayersNo = server.getOnlineCount();
-                        System.out.println("offlinePlayersNo = " + offlinePlayersNo);
-                        System.out.println("onlinePlayersNo = " + onlinePlayersNo);
+                        //System.out.println("offlinePlayersNo = " + offlinePlayersNo);
+                        //System.out.println("onlinePlayersNo = " + onlinePlayersNo);
                         pieChartData
                                 = FXCollections.observableArrayList(
                                         new PieChart.Data("Online", onlinePlayersNo),

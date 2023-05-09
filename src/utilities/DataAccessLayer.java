@@ -54,11 +54,14 @@ public class DataAccessLayer {
     }
 
     public synchronized void signUp(String email, String username, String password) throws SQLException {
-        String Stmt = "insert into " + TABLE_NAME + " (USERNAME,EMAIL,PASSWORD) values(?,?,?)";
+        String Stmt = "insert into " + TABLE_NAME + " (USERNAME,EMAIL,PASSWORD,ISACTIVE,ISPLAY,SCORE) values(?,?,?,?,?,?)";
         prst = con.prepareStatement(Stmt);
         prst.setString(1, username);
         prst.setString(2, email);
         prst.setString(3, password);
+        prst.setBoolean(4, false);
+        prst.setBoolean(5, false);
+        prst.setInt(6, 0);
         isDone = prst.executeUpdate();
         if (isDone > 0) {
             System.out.println("Insert Done");
@@ -232,4 +235,5 @@ public class DataAccessLayer {
         }
         return null;
     }
+    
 }

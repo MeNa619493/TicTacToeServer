@@ -13,6 +13,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,18 +21,19 @@ import java.util.logging.Logger;
  *
  * @author Mina
  */
-public class OnlinePlayer extends Thread {
+class OnlinePlayer extends Thread {
 
     private Boolean loggedin;
     private Server server;
     private DataInputStream dis;
     private PrintStream ps;
     private Socket currentSocket;
+
     private String clientData, query;
     private StringTokenizer token;
     Thread thread;
     DataAccessLayer database;
-    ArrayList<OnlinePlayer> OnlineUsers = new ArrayList();
+    static ArrayList<OnlinePlayer> OnlineUsers =  new ArrayList();
     private String username;
     private String password;
     private String email;
@@ -55,6 +57,7 @@ public class OnlinePlayer extends Thread {
             } catch (IOException e) {
                 System.out.println("problem in close socket in case IOException OnlinePlayer");
                 e.printStackTrace();
+
             }
         }
     }
@@ -62,6 +65,7 @@ public class OnlinePlayer extends Thread {
     public void run() {
         if (server != null) {
             while (currentSocket.isConnected()) {
+//                System.out.println("logged in users = "+OnlineUsers.size());
                 try {
                     clientData = dis.readLine();
                     if (clientData != null) {
@@ -69,6 +73,7 @@ public class OnlinePlayer extends Thread {
                         token = new StringTokenizer(clientData, "####");
                         query = token.nextToken();
                         switch (query) {
+
                             case "SignIn":
                                 SignIn();
                                 break;
@@ -79,8 +84,13 @@ public class OnlinePlayer extends Thread {
                                 pushAvliableFriend();
                                 break;
                             case "request":
-                                requestPlaying();
+                                sendRequest();
+                                for (OnlinePlayer user : OnlineUsers) {
+                                    user.ps.println("requestPlaying");
+                                }
+
                                 break;
+
                             case "accept":
                                 //acceptChallenge();
                                 break;
@@ -109,17 +119,20 @@ public class OnlinePlayer extends Thread {
     }
 
     private void SignIn() {
-        String email = token.nextToken();
-        String password = token.nextToken();
+        email = token.nextToken();
+        password = token.nextToken();
         System.out.println(email + " " + password);
         String check;
         try {
             check = database.validateLogin(email, password);
             if (check.equals("Login Successful")) {
+                OnlineUsers.add(this);
+
                 ps.println("Login Successful");
                 System.out.println("User is Signed in ");
-                String username = server.getUsername(email);
+                username = server.getUsername(email);
                 ps.println(username);
+
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
             }
@@ -129,9 +142,9 @@ public class OnlinePlayer extends Thread {
     }
 
     private void SignUp() {
-        String username = token.nextToken();
-        String email = token.nextToken();
-        String password = token.nextToken();
+        username = token.nextToken();
+        email = token.nextToken();
+        password = token.nextToken();
         System.out.println(username + " " + email + " " + password);
         String check;
         try {
@@ -181,9 +194,13 @@ public class OnlinePlayer extends Thread {
 
     private void sendRequest() {
         String secondPlayer = token.nextToken();
+//        System.out.println(secondPlayer);
         String player1 = token.nextToken();
+//        System.out.println(player1);
+
         for (OnlinePlayer user : OnlineUsers) {
-            if (user.email.equals(secondPlayer)) {
+            if (user.username.equals(secondPlayer)) {
+                System.out.println(secondPlayer);
                 user.ps.println("requestPlaying");
                 user.ps.println(secondPlayer);
 
