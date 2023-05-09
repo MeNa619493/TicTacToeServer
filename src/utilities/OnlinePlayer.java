@@ -23,12 +23,10 @@ import java.util.logging.Logger;
  */
 class OnlinePlayer extends Thread {
 
-    private Boolean loggedin;
     private Server server;
     private DataInputStream dis;
     private PrintStream ps;
     private Socket currentSocket;
-
     private String clientData, query;
     private StringTokenizer token;
     Thread thread;
@@ -39,7 +37,6 @@ class OnlinePlayer extends Thread {
     private String email;
 
     public OnlinePlayer(Socket socket) {
-        loggedin = false;
         database = DataAccessLayer.getInstance();
         System.out.println("start OnlinePlayer");
         server = Server.getServer();
@@ -65,7 +62,6 @@ class OnlinePlayer extends Thread {
     public void run() {
         if (server != null) {
             while (currentSocket.isConnected()) {
-//                System.out.println("logged in users = "+OnlineUsers.size());
                 try {
                     clientData = dis.readLine();
                     if (clientData != null) {
@@ -73,7 +69,6 @@ class OnlinePlayer extends Thread {
                         token = new StringTokenizer(clientData, "####");
                         query = token.nextToken();
                         switch (query) {
-
                             case "SignIn":
                                 SignIn();
                                 break;
@@ -203,11 +198,10 @@ class OnlinePlayer extends Thread {
                 System.out.println(secondPlayer);
                 user.ps.println("requestPlaying");
                 user.ps.println(secondPlayer);
-
             }
-
         }
-
     }
+    
+    
 
 }
