@@ -80,12 +80,7 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "request":
                                 sendRequest();
-                                for (OnlinePlayer user : OnlineUsers) {
-                                    user.ps.println("requestPlaying");
-                                }
-
                                 break;
-
                             case "accept":
                                 //acceptChallenge();
                                 break;
