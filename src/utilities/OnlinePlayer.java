@@ -37,7 +37,9 @@ class OnlinePlayer extends Thread {
     BufferedWriter bufferedWriter;
     Thread thread;
     DataAccessLayer database;
+
     static Vector<OnlinePlayer> OnlineUsers = new Vector();
+
     private String username;
     private String password;
     private String email;
@@ -90,12 +92,15 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "request":
                                 sendRequest();
+
                                 break;
                             case "accept":
-                                //acceptChallenge();
+                                acceptRequest();
+                                System.out.println("aaaaaaaaaaaaaaaaaaa");
                                 break;
                             case "decline":
                                 //refusedChallenge();
+                                System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
 
                             default:
@@ -177,7 +182,9 @@ class OnlinePlayer extends Thread {
                             ps.println(name + "###");
                         }
                         ps.println("finished");
+
                         ps.flush();
+
 
                         try {
                             Thread.sleep(5000);
@@ -205,7 +212,38 @@ class OnlinePlayer extends Thread {
                 System.out.println("the opponent is " + user.username);
                 System.out.println(user.currentSocket.getLocalSocketAddress().toString());
                 user.ps.println("requestPlaying");
-                user.ps.println(secondPlayer);
+                user.ps.println(player1);
+
+
+            }
+        }
+    }
+
+    private void acceptRequest() {
+
+        String playerTwo = token.nextToken();
+        String playerone = token.nextToken();
+        //change State for user to active
+        OnlinePlayer player1 = null, player2 = null;
+        for (OnlinePlayer player : OnlineUsers) {
+            if (player.username == playerone) {
+                player1 = player;
+            } else if (player.username == playerTwo) {
+                player2 = player;
+            }
+            if (player1 == null || player2 == null) {
+                System.out.println("one of Them become not Avilable");
+            }
+
+        }
+    }
+
+    private void refusedRequest() {
+        System.out.println("refused");
+        String opponot = token.nextToken();
+        for (OnlinePlayer user : OnlineUsers) {
+            if (user.username.equals(opponot)) {
+                user.ps.println("refuse");
             }
         }
     }
