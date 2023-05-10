@@ -24,6 +24,8 @@ import java.util.logging.Logger;
 class OnlinePlayer extends Thread {
 
     private Boolean loggedin;
+     String secondPlayer ;
+     String player1 ;
     private Server server;
     private DataInputStream dis;
     private PrintStream ps;
@@ -95,8 +97,9 @@ class OnlinePlayer extends Thread {
                                 acceptRequest();
                                 System.out.println("aaaaaaaaaaaaaaaaaaa");
                                 break;
-                            case "decline":
-                                //refusedChallenge();
+                            case "refuse":
+                               
+                                   refusedRequest();
                                 System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
 
@@ -195,9 +198,9 @@ class OnlinePlayer extends Thread {
     }
 
     private void sendRequest() {
-        String secondPlayer = token.nextToken();
+         secondPlayer = token.nextToken();
 //        System.out.println(secondPlayer);
-        String player1 = token.nextToken();
+        player1 = token.nextToken();
 //        System.out.println(player1);
 
         for (OnlinePlayer user : OnlineUsers) {
@@ -233,9 +236,10 @@ class OnlinePlayer extends Thread {
 
     private void refusedRequest() {
         System.out.println("refused");
-        String opponot = token.nextToken();
+        String oppont = token.nextToken();
+   
         for (OnlinePlayer user : OnlineUsers) {
-            if (user.username.equals(opponot)) {
+            if (user.username.equals(oppont)) {
                 user.ps.println("refuse");
             }
         }
