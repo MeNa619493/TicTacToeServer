@@ -6,8 +6,11 @@
 package utilities;
 
 import Assets.ServerUiClass;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -23,30 +26,36 @@ import java.util.logging.Logger;
  */
 class OnlinePlayer extends Thread {
 
-    private Boolean loggedin;
     private Server server;
     private DataInputStream dis;
     private PrintStream ps;
     private Socket currentSocket;
-
     private String clientData, query;
     private StringTokenizer token;
+    OutputStream outputStream;
+    OutputStreamWriter outputStreamWriter;
+    BufferedWriter bufferedWriter;
     Thread thread;
     DataAccessLayer database;
-    static ArrayList<OnlinePlayer> OnlineUsers = new ArrayList();
+
+    static Vector<OnlinePlayer> OnlineUsers = new Vector();
+
     private String username;
     private String password;
     private String email;
 
     public OnlinePlayer(Socket socket) {
-        loggedin = false;
         database = DataAccessLayer.getInstance();
         System.out.println("start OnlinePlayer");
         server = Server.getServer();
         try {
-            dis = new DataInputStream(socket.getInputStream());
-            ps = new PrintStream(socket.getOutputStream());
             currentSocket = socket;
+            dis = new DataInputStream(currentSocket.getInputStream());
+            ps = new PrintStream(currentSocket.getOutputStream());
+            outputStream = socket.getOutputStream();
+            outputStreamWriter = new OutputStreamWriter(outputStream);
+            bufferedWriter = new BufferedWriter(outputStreamWriter);
+           
             this.start();
         } catch (IOException ex) {
             System.out.println("problem in streams OnlinePlayer");
@@ -65,7 +74,6 @@ class OnlinePlayer extends Thread {
     public void run() {
         if (server != null) {
             while (currentSocket.isConnected()) {
-//                System.out.println("logged in users = "+OnlineUsers.size());
                 try {
                     clientData = dis.readLine();
                     if (clientData != null) {
@@ -73,7 +81,6 @@ class OnlinePlayer extends Thread {
                         token = new StringTokenizer(clientData, "####");
                         query = token.nextToken();
                         switch (query) {
-
                             case "SignIn":
                                 SignIn();
                                 break;
@@ -85,12 +92,8 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "request":
                                 sendRequest();
-//                                for (OnlinePlayer user : OnlineUsers) {
-//                                    user.ps.println("requestPlaying");
-//                                }
 
                                 break;
-
                             case "accept":
                                 acceptRequest();
                                 System.out.println("aaaaaaaaaaaaaaaaaaa");
@@ -131,10 +134,11 @@ class OnlinePlayer extends Thread {
                 OnlineUsers.add(this);
 
                 ps.println("Login Successful");
-                System.out.println("User is Signed in ");
-                username = server.getUsername(email);
-                ps.println(username);
 
+                username = server.getUsername(email);
+                System.out.println("User is Signed in " + username);
+                System.out.println(currentSocket.getLocalSocketAddress().toString());
+                ps.println(username);
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
             }
@@ -179,6 +183,9 @@ class OnlinePlayer extends Thread {
                         }
                         ps.println("finished");
 
+                        ps.flush();
+
+
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException ex) {
@@ -202,14 +209,14 @@ class OnlinePlayer extends Thread {
 
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(secondPlayer)) {
-                System.out.println(secondPlayer);
+                System.out.println("the opponent is " + user.username);
+                System.out.println(user.currentSocket.getLocalSocketAddress().toString());
                 user.ps.println("requestPlaying");
                 user.ps.println(player1);
 
+
             }
-
         }
-
     }
 
     private void acceptRequest() {
