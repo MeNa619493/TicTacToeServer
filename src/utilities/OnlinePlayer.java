@@ -33,7 +33,7 @@ class OnlinePlayer extends Thread {
     private StringTokenizer token;
     Thread thread;
     DataAccessLayer database;
-    static ArrayList<OnlinePlayer> OnlineUsers =  new ArrayList();
+    static ArrayList<OnlinePlayer> OnlineUsers = new ArrayList();
     private String username;
     private String password;
     private String email;
@@ -85,17 +85,19 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "request":
                                 sendRequest();
-                                for (OnlinePlayer user : OnlineUsers) {
-                                    user.ps.println("requestPlaying");
-                                }
+//                                for (OnlinePlayer user : OnlineUsers) {
+//                                    user.ps.println("requestPlaying");
+//                                }
 
                                 break;
 
                             case "accept":
-                                //acceptChallenge();
+                                acceptRequest();
+                                System.out.println("aaaaaaaaaaaaaaaaaaa");
                                 break;
                             case "decline":
                                 //refusedChallenge();
+                                System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
 
                             default:
@@ -175,7 +177,7 @@ class OnlinePlayer extends Thread {
                         for (String name : availableFriends) {
                             ps.println(name + "###");
                         }
-                        ps.println("null");
+                        ps.println("finished");
 
                         try {
                             Thread.sleep(5000);
@@ -202,12 +204,41 @@ class OnlinePlayer extends Thread {
             if (user.username.equals(secondPlayer)) {
                 System.out.println(secondPlayer);
                 user.ps.println("requestPlaying");
-                user.ps.println(secondPlayer);
+                user.ps.println(player1);
 
             }
 
         }
 
+    }
+
+    private void acceptRequest() {
+
+        String playerTwo = token.nextToken();
+        String playerone = token.nextToken();
+        //change State for user to active
+        OnlinePlayer player1 = null, player2 = null;
+        for (OnlinePlayer player : OnlineUsers) {
+            if (player.username == playerone) {
+                player1 = player;
+            } else if (player.username == playerTwo) {
+                player2 = player;
+            }
+            if (player1 == null || player2 == null) {
+                System.out.println("one of Them become not Avilable");
+            }
+
+        }
+    }
+
+    private void refusedRequest() {
+        System.out.println("refused");
+        String opponot = token.nextToken();
+        for (OnlinePlayer user : OnlineUsers) {
+            if (user.username.equals(opponot)) {
+                user.ps.println("refuse");
+            }
+        }
     }
 
 }
