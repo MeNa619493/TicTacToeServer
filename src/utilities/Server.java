@@ -55,12 +55,11 @@ public class Server {
                 while (true) {
                     try {
                         clientSocket = serverSocket.accept();
+                        System.out.println("new player Socket " + clientSocket);
                         new OnlinePlayer(clientSocket);
                         listOfClientSockets.add(clientSocket);
                         System.out.println("new player is created");   
-
                     } catch (IOException ex) {
-
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                         try {
                             serverSocket.close();
@@ -76,10 +75,6 @@ public class Server {
             System.out.println("server Error");
             ex.printStackTrace();
         }
-    }
-    
-    public int getOnline(){
-        return database.getOnlinePlayers();
     }
     
     public int getOnlineCount(){
