@@ -88,10 +88,9 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "accept":
                                 acceptRequest();
-                                System.out.println("aaaaaaaaaaaaaaaaaaa");
                                 break;
-                            case "decline":
-                                //refusedChallenge();
+                            case "refuse":
+                                refusedRequest();
                                 System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
 
