@@ -246,5 +246,4 @@ class OnlinePlayer extends Thread {
             }
         }
     }
-
 }
