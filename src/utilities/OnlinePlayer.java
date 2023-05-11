@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 class OnlinePlayer extends Thread {
 
     private Boolean loggedin;
-     String secondPlayer ;
-     String player1 ;
+    String secondPlayer;
+    String player1;
 
     private Server server;
     private DataInputStream dis;
@@ -43,7 +43,7 @@ class OnlinePlayer extends Thread {
     private String username;
     private String password;
     private String email;
-    private HashMap<String, OnlinePlayer> gameRoom = new HashMap<>();
+    private static HashMap<String, OnlinePlayer> gameRoom = new HashMap<>();
 
     public OnlinePlayer(Socket socket) {
         database = DataAccessLayer.getInstance();
@@ -52,7 +52,7 @@ class OnlinePlayer extends Thread {
         try {
             currentSocket = socket;
             dis = new DataInputStream(currentSocket.getInputStream());
-            ps = new PrintStream(currentSocket.getOutputStream()); 
+            ps = new PrintStream(currentSocket.getOutputStream());
             this.start();
         } catch (IOException ex) {
             System.out.println("problem in streams OnlinePlayer");
@@ -92,6 +92,9 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "accept":
                                 acceptRequest();
+                                break;
+                            case "play":
+                                Pressandplay();
                                 break;
                             case "refuse":
 
@@ -137,7 +140,7 @@ class OnlinePlayer extends Thread {
                 ps.println(username);
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
-            } else if(check.equals("User Already Signed in")){
+            } else if (check.equals("User Already Signed in")) {
                 ps.println("User Already Signed in");
             }
         } catch (Exception ex) {
@@ -183,7 +186,6 @@ class OnlinePlayer extends Thread {
 
                         ps.flush();
 
-
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException ex) {
@@ -200,7 +202,7 @@ class OnlinePlayer extends Thread {
     }
 
     private void sendRequest() {
-         secondPlayer = token.nextToken();
+        secondPlayer = token.nextToken();
 //        System.out.println(secondPlayer);
         player1 = token.nextToken();
 //        System.out.println(player1);
@@ -229,25 +231,36 @@ class OnlinePlayer extends Thread {
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
                 System.out.println("dddddddddddddddddddd");
-            } }
-            if (player1 == null || player2 == null) {
-                System.out.println("one of Them become not Avilable");
-            }else {
-                gameRoom.put(playerTwo, player2);
-                gameRoom.put(playerOne, player1);
-                player1.ps.println("gameStarted");
             }
-        
+        }
+        if (player1 == null || player2 == null) {
+            System.out.println("one of Them become not Avilable");
+        } else {
+            gameRoom.put(playerTwo, player2);
+            gameRoom.put(playerOne, player1);
+            player1.ps.println("gameStarted");
+        }
+
     }
 
     private void refusedRequest() {
         System.out.println("refused");
         String oppont = token.nextToken();
-   
+
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(oppont)) {
                 user.ps.println("refuse");
             }
         }
+    }
+
+    private void Pressandplay() {
+        String user = token.nextToken();
+        String button = token.nextToken();
+        OnlinePlayer onlinePlayer1 = gameRoom.get(user);
+        onlinePlayer1.ps.println("Game");
+        onlinePlayer1.ps.println(button);
+        
+
     }
 }
