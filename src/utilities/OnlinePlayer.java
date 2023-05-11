@@ -52,7 +52,7 @@ class OnlinePlayer extends Thread {
         try {
             currentSocket = socket;
             dis = new DataInputStream(currentSocket.getInputStream());
-            ps = new PrintStream(currentSocket.getOutputStream()); 
+            ps = new PrintStream(currentSocket.getOutputStream());
             this.start();
         } catch (IOException ex) {
             System.out.println("problem in streams OnlinePlayer");
@@ -94,11 +94,13 @@ class OnlinePlayer extends Thread {
                                 acceptRequest();
                                 break;
                             case "refuse":
-
                                 refusedRequest();
                                 System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
-
+                            case "logout":
+                                logOut();
+                                System.out.println("log out");
+                                break;
                             default:
                                 break;
                         }
@@ -183,7 +185,6 @@ class OnlinePlayer extends Thread {
 
                         ps.flush();
 
-
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException ex) {
@@ -232,7 +233,7 @@ class OnlinePlayer extends Thread {
             } }
             if (player1 == null || player2 == null) {
                 System.out.println("one of Them become not Avilable");
-            }else {
+            } else {
                 gameRoom.put(playerTwo, player2);
                 gameRoom.put(playerOne, player1);
                 player1.ps.println("gameStarted");
@@ -249,5 +250,17 @@ class OnlinePlayer extends Thread {
                 user.ps.println("refuse");
             }
         }
+    }
+
+    private void logOut() {
+        System.out.println("log out");
+        String userName = token.nextToken();
+        database.logOutUser(userName);
+        for (OnlinePlayer user : OnlineUsers) {
+            if (user.username.equals(userName)) {
+                OnlineUsers.remove(userName);
+            }
+        }
+
     }
 }
