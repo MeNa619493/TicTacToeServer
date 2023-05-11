@@ -259,7 +259,7 @@ class OnlinePlayer extends Thread {
         server.logout(userName);
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(userName)) {
-                OnlineUsers.remove(userName);
+                OnlineUsers.remove(user);
             }
         }
     }
