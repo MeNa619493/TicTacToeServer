@@ -44,7 +44,7 @@ public class Server {
     
     public void startConnection() throws SQLException{
         database = DataAccessLayer.getInstance();
-        database.defaultStatus();
+        database.makeAllPlayersOffline();
         startServer();
     }
 

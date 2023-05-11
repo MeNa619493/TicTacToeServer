@@ -48,7 +48,7 @@ class OnlinePlayer extends Thread {
         try {
             currentSocket = socket;
             dis = new DataInputStream(currentSocket.getInputStream());
-            ps = new PrintStream(currentSocket.getOutputStream()); 
+            ps = new PrintStream(currentSocket.getOutputStream());
             this.start();
         } catch (IOException ex) {
             System.out.println("problem in streams OnlinePlayer");
@@ -132,7 +132,7 @@ class OnlinePlayer extends Thread {
                 ps.println(username);
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
-            } else if(check.equals("User Already Signed in")){
+            } else if (check.equals("User Already Signed in")) {
                 ps.println("User Already Signed in");
             }
         } catch (Exception ex) {
@@ -178,7 +178,6 @@ class OnlinePlayer extends Thread {
 
                         ps.flush();
 
-
                         try {
                             Thread.sleep(5000);
                         } catch (InterruptedException ex) {
@@ -221,13 +220,13 @@ class OnlinePlayer extends Thread {
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
             }
-            if (player1 == null || player2 == null) {
-                System.out.println("one of Them become not Avilable");
-            }else {
-                gameRoom.put(playerTwo, player2);
-                gameRoom.put(playerOne, player1);
-                player1.ps.println("gameStarted");
-            }
+        }
+        if (player1 == null || player2 == null) {
+            System.out.println("one of Them become not Avilable");
+        } else {
+            gameRoom.put(playerTwo, player2);
+            gameRoom.put(playerOne, player1);
+            player1.ps.println("gameStarted");
         }
     }
 

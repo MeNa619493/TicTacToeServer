@@ -164,41 +164,22 @@ public class DataAccessLayer {
         }
     }
 
-    public synchronized void defaultStatus() throws SQLException {
-        makePlayersNotPlaying();
-        makeAllPlayersOffline();
-    }
-
-    public synchronized void makePlayersNotPlaying() {
+    public synchronized void makeAllPlayersOffline() {
         try {
-            prst = con.prepareStatement("update " + TABLE_NAME + " set isPlay = ? ",
+            prst = con.prepareStatement("update " + TABLE_NAME + " set ISPLAY = ? AND ISACTIVE = ? ",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             prst.setBoolean(1, false);
+            prst.setBoolean(2, false);
             prst.executeUpdate();
-
         } catch (SQLException ex) {
             System.out.println("problem in makePlayersNotPlaying");
             ex.printStackTrace();
         }
     }
 
-    public synchronized void makeAllPlayersOffline() {
-        try {
-            prst = con.prepareStatement("update " + TABLE_NAME + " set isActive = ? ",
-                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            prst.setBoolean(1, false);
-            prst.executeUpdate();
-
-        } catch (SQLException ex) {
-            System.out.println("problem in makeAllPlayersOffline");
-            ex.printStackTrace();
-        }
-
-    }
-
     public void close() throws SQLException {
         System.out.println("connection closed");
-        defaultStatus();
+        makeAllPlayersOffline();
         rs.close();
         prst.close();
         con.close();
@@ -254,6 +235,49 @@ public class DataAccessLayer {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public synchronized void setUserScore(int score, String username) {
+        try {
+            prst = con.prepareStatement("UPDATE " + TABLE_NAME + " SET SCORE = ? WHERE USERNAME = ?");
+            prst.setInt(1, score);
+            prst.setString(2, username);
+            prst.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("problem in setIsPlaying");
+            ex.printStackTrace();
+        }
+    }
+
+    public synchronized int getUserScore(String username) {
+        try {
+            prst = con.prepareStatement("SELECT USERNAME FROM " + TABLE_NAME + " WHERE USERNAME=?",
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            prst.setString(1, username);
+            rs = prst.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("SCORE");
+            }
+        } catch (SQLException ex) {
+            System.out.println("problem in getUsername");
+            ex.printStackTrace();
+        }
+        return 0;
+    }
+
+    public synchronized void logoutUser(String username) {
+        try {
+            prst = con.prepareStatement("update " + TABLE_NAME + " set ISPLAY = ? AND ISACTIVE = ? "
+                    + "WHERE USERNAME = ?",
+                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+            prst.setBoolean(1, false);
+            prst.setBoolean(2, false);
+            prst.setString(3, username);
+            prst.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("problem in makeAllPlayersOffline");
+            ex.printStackTrace();
+        }
     }
 
 }
