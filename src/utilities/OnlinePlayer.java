@@ -217,15 +217,19 @@ class OnlinePlayer extends Thread {
     private void acceptRequest() {
 
         String playerTwo = token.nextToken();
+        System.out.println(playerTwo);
         String playerOne = token.nextToken();
+        System.out.println(playerOne);
         //change State for user to active
         OnlinePlayer player1 = null, player2 = null;
         for (OnlinePlayer player : OnlineUsers) {
             if (player.username.equals(playerOne)) {
                 player1 = player;
+                System.out.println("mmmmmmmmmmmmmmmmm");
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
-            }
+                System.out.println("dddddddddddddddddddd");
+            } }
             if (player1 == null || player2 == null) {
                 System.out.println("one of Them become not Avilable");
             }else {
@@ -233,7 +237,7 @@ class OnlinePlayer extends Thread {
                 gameRoom.put(playerOne, player1);
                 player1.ps.println("gameStarted");
             }
-        }
+        
     }
 
     private void refusedRequest() {
