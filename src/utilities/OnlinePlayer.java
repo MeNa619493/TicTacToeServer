@@ -260,8 +260,14 @@ class OnlinePlayer extends Thread {
 
     private void Pressandplay() {
         String user = token.nextToken();
+        System.out.println(user);
         String button = token.nextToken();
+        System.out.println(button);
         OnlinePlayer onlinePlayer1 = gameRoom.get(user);
+        if(onlinePlayer1!=null){
+            System.out.println("not nullllllllllllllllllll");
+            System.out.println(onlinePlayer1.username);
+        }
         onlinePlayer1.ps.println("game");
         onlinePlayer1.ps.println(button); 
     }
