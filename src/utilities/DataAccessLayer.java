@@ -258,6 +258,7 @@ public class DataAccessLayer {
         return null;
     }
 
+
     public synchronized void logOutUser(String userName) {
 
         try {
@@ -269,4 +270,5 @@ public class DataAccessLayer {
         }
 
     }
+
 }
