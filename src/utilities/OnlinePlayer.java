@@ -27,6 +27,10 @@ import java.util.logging.Logger;
  */
 class OnlinePlayer extends Thread {
 
+    private Boolean loggedin;
+     String secondPlayer ;
+     String player1 ;
+
     private Server server;
     private DataInputStream dis;
     private PrintStream ps;
@@ -197,11 +201,11 @@ class OnlinePlayer extends Thread {
     }
 
     private void sendRequest() {
-        String secondPlayer = token.nextToken();
-        // System.out.println(secondPlayer);
-        String player1 = token.nextToken();
-        // System.out.println(player1);
 
+         secondPlayer = token.nextToken();
+//        System.out.println(secondPlayer);
+        player1 = token.nextToken();
+//        System.out.println(player1);
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(secondPlayer)) {
                 System.out.println("the opponent is " + user.username);
@@ -214,14 +218,18 @@ class OnlinePlayer extends Thread {
     private void acceptRequest() {
 
         String playerTwo = token.nextToken();
+        System.out.println(playerTwo);
         String playerOne = token.nextToken();
         // change State for user to active
+        System.out.println(playerOne);
         OnlinePlayer player1 = null, player2 = null;
         for (OnlinePlayer player : OnlineUsers) {
             if (player.username.equals(playerOne)) {
                 player1 = player;
+                System.out.println("mmmmmmmmmmmmmmmmm");
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
+
             }
         }
 
@@ -232,14 +240,14 @@ class OnlinePlayer extends Thread {
             gameRoom.put(playerOne, player1);
             player1.ps.println("gameStarted");
         }
-
     }
 
     private void refusedRequest() {
         System.out.println("refused");
-        String opponot = token.nextToken();
+        String oppont = token.nextToken();
+   
         for (OnlinePlayer user : OnlineUsers) {
-            if (user.username.equals(opponot)) {
+            if (user.username.equals(oppont)) {
                 user.ps.println("refuse");
             }
         }
