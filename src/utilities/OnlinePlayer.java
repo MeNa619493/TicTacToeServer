@@ -132,6 +132,8 @@ class OnlinePlayer extends Thread {
                 ps.println(username);
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
+            } else if(check.equals("User Already Signed in")){
+                ps.println("User Already Signed in");
             }
         } catch (Exception ex) {
             Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
