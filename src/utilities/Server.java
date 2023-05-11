@@ -44,7 +44,7 @@ public class Server {
     
     public void startConnection() throws SQLException{
         database = DataAccessLayer.getInstance();
-        database.makeAllPlayersOffline();
+        database.defaultStatus();
         startServer();
     }
 
@@ -97,6 +97,10 @@ public class Server {
         }catch(IOException ex) {
             System.out.print("problem in closing clients sockets in closeClientsSockets");
         }  
+    }
+    
+    public void logout(String username) {
+        database.logoutUser(username);
     }
 
     public void stopServer() {

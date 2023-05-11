@@ -248,12 +248,13 @@ class OnlinePlayer extends Thread {
     private void logOut() {
         System.out.println("log out");
         String userName = token.nextToken();
-        database.logOutUser(userName);
+        server.logout(userName);
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(userName)) {
                 OnlineUsers.remove(userName);
             }
         }
-
     }
+    
+    
 }
