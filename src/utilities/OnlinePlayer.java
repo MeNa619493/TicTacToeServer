@@ -28,8 +28,8 @@ import java.util.logging.Logger;
 class OnlinePlayer extends Thread {
 
     private Boolean loggedin;
-     String secondPlayer ;
-     String player1 ;
+    String secondPlayer;
+    String player1;
 
     private Server server;
     private DataInputStream dis;
@@ -43,7 +43,7 @@ class OnlinePlayer extends Thread {
     private String username;
     private String password;
     private String email;
-    private HashMap<String, OnlinePlayer> gameRoom = new HashMap<>();
+    private static HashMap<String, OnlinePlayer> gameRoom = new HashMap<>();
 
     public OnlinePlayer(Socket socket) {
         database = DataAccessLayer.getInstance();
@@ -92,6 +92,9 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "accept":
                                 acceptRequest();
+                                break;
+                            case "play":
+                                Pressandplay();
                                 break;
                             case "refuse":
                                 refusedRequest();
@@ -201,8 +204,9 @@ class OnlinePlayer extends Thread {
     }
 
     private void sendRequest() {
+        secondPlayer = token.nextToken();
 
-         secondPlayer = token.nextToken();
+
 //        System.out.println(secondPlayer);
         player1 = token.nextToken();
 //        System.out.println(player1);
@@ -229,10 +233,10 @@ class OnlinePlayer extends Thread {
                 System.out.println("mmmmmmmmmmmmmmmmm");
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
-
-            }
+                System.out.println("dddddddddddddddddddd");
+            } 
         }
-
+   
         if (player1 == null || player2 == null) {
             System.out.println("one of Them become not Avilable");
         } else {
@@ -241,11 +245,12 @@ class OnlinePlayer extends Thread {
             player1.ps.println("gameStarted");
         }
     }
+    
 
     private void refusedRequest() {
         System.out.println("refused");
         String oppont = token.nextToken();
-   
+
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(oppont)) {
                 user.ps.println("refuse");
@@ -253,6 +258,15 @@ class OnlinePlayer extends Thread {
         }
     }
 
+
+    private void Pressandplay() {
+        String user = token.nextToken();
+        String button = token.nextToken();
+        OnlinePlayer onlinePlayer1 = gameRoom.get(user);
+        onlinePlayer1.ps.println("game");
+        onlinePlayer1.ps.println(button); 
+    }
+        
     private void logOut() {
         System.out.println("log out");
         String userName = token.nextToken();
