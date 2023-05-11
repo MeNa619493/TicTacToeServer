@@ -222,7 +222,7 @@ class OnlinePlayer extends Thread {
                 player1 = player;
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
-            }
+            }}
             if (player1 == null || player2 == null) {
                 System.out.println("one of Them become not Avilable");
             } else {
@@ -231,7 +231,7 @@ class OnlinePlayer extends Thread {
                 player1.ps.println("gameStarted");
             }
         }
-    }
+    
 
     private void refusedRequest() {
         System.out.println("refused");
