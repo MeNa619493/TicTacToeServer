@@ -57,7 +57,7 @@ class OnlinePlayer extends Thread {
         } catch (IOException ex) {
             System.out.println("problem in streams OnlinePlayer");
             ex.printStackTrace();
-            // alert 
+            // alert
             try {
                 socket.close();
             } catch (IOException e) {
@@ -139,7 +139,7 @@ class OnlinePlayer extends Thread {
                 ps.println(username);
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
-            } else if(check.equals("User Already Signed in")){
+            } else if (check.equals("User Already Signed in")) {
                 ps.println("User Already Signed in");
             }
         } catch (Exception ex) {
@@ -201,11 +201,11 @@ class OnlinePlayer extends Thread {
     }
 
     private void sendRequest() {
+
          secondPlayer = token.nextToken();
 //        System.out.println(secondPlayer);
         player1 = token.nextToken();
 //        System.out.println(player1);
-
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(secondPlayer)) {
                 System.out.println("the opponent is " + user.username);
@@ -220,8 +220,8 @@ class OnlinePlayer extends Thread {
         String playerTwo = token.nextToken();
         System.out.println(playerTwo);
         String playerOne = token.nextToken();
+        // change State for user to active
         System.out.println(playerOne);
-        //change State for user to active
         OnlinePlayer player1 = null, player2 = null;
         for (OnlinePlayer player : OnlineUsers) {
             if (player.username.equals(playerOne)) {
@@ -229,16 +229,17 @@ class OnlinePlayer extends Thread {
                 System.out.println("mmmmmmmmmmmmmmmmm");
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
-                System.out.println("dddddddddddddddddddd");
-            } }
-            if (player1 == null || player2 == null) {
-                System.out.println("one of Them become not Avilable");
-            } else {
-                gameRoom.put(playerTwo, player2);
-                gameRoom.put(playerOne, player1);
-                player1.ps.println("gameStarted");
+
             }
-        
+        }
+
+        if (player1 == null || player2 == null) {
+            System.out.println("one of Them become not Avilable");
+        } else {
+            gameRoom.put(playerTwo, player2);
+            gameRoom.put(playerOne, player1);
+            player1.ps.println("gameStarted");
+        }
     }
 
     private void refusedRequest() {
@@ -255,12 +256,13 @@ class OnlinePlayer extends Thread {
     private void logOut() {
         System.out.println("log out");
         String userName = token.nextToken();
-        database.logOutUser(userName);
+        server.logout(userName);
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(userName)) {
                 OnlineUsers.remove(userName);
             }
         }
-
     }
+    
+    
 }

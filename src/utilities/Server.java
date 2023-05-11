@@ -98,6 +98,10 @@ public class Server {
             System.out.print("problem in closing clients sockets in closeClientsSockets");
         }  
     }
+    
+    public void logout(String username) {
+        database.logoutUser(username);
+    }
 
     public void stopServer() {
         try {
