@@ -226,16 +226,15 @@ class OnlinePlayer extends Thread {
         for (OnlinePlayer player : OnlineUsers) {
             if (player.username.equals(playerOne)) {
                 player1 = player;
-                System.out.println("mmmmmmmmmmmmmmmmm");
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
-
             }
         }
 
         if (player1 == null || player2 == null) {
             System.out.println("one of Them become not Avilable");
         } else {
+            server.changePlayerState(playerOne, playerTwo);
             gameRoom.put(playerTwo, player2);
             gameRoom.put(playerOne, player1);
             player1.ps.println("gameStarted");
@@ -257,11 +256,15 @@ class OnlinePlayer extends Thread {
         System.out.println("log out");
         String userName = token.nextToken();
         server.logout(userName);
-        for (OnlinePlayer user : OnlineUsers) {
-            if (user.username.equals(userName)) {
-                OnlineUsers.remove(userName);
-            }
-        }
+        System.out.println("before remove " + OnlineUsers.size());
+        OnlineUsers.remove(this);
+        System.out.println("after remove " + OnlineUsers.size());
+        try {
+           currentSocket.close();
+           System.out.println("socket closed after log out");
+       } catch (IOException ex) {
+           ex.printStackTrace();
+       }
     }
     
     
