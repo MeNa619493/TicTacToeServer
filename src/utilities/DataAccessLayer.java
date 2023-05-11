@@ -96,6 +96,9 @@ public class DataAccessLayer {
 
         if (rs.next()) {
             // Check if the user is already signed in
+            if (checkIsPlayerActive(email)) {
+                return "User Already Signed in";
+            }
             // Set user status to active
             String updateStmt = "UPDATE " + TABLE_NAME + " SET ISACTIVE = ? WHERE EMAIL = ?";
             prst = con.prepareStatement(updateStmt);
@@ -106,6 +109,23 @@ public class DataAccessLayer {
         } else {
             return "Invalid Email or Password";
         }
+    }
+
+    public synchronized boolean checkIsPlayerActive(String email) {
+        try {
+            prst = con.prepareStatement("SELECT * FROM " + TABLE_NAME + " WHERE EMAIL = ? AND ISACTIVE = TRUE",
+                    ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_READ_ONLY);
+            prst.setString(1, email);
+            rs = prst.executeQuery();
+            if (rs.next()) {
+                return true;
+            }
+        } catch (SQLException ex) {
+            System.out.println("problem in makeAllPlayersOffline");
+            ex.printStackTrace();
+        }
+        return false;
     }
 
     public synchronized int getOnlinePlayers() {
@@ -153,7 +173,7 @@ public class DataAccessLayer {
         try {
             prst = con.prepareStatement("update " + TABLE_NAME + " set isPlay = ? ",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            prst.setString(1, "false");
+            prst.setBoolean(1, false);
             prst.executeUpdate();
 
         } catch (SQLException ex) {
@@ -166,7 +186,7 @@ public class DataAccessLayer {
         try {
             prst = con.prepareStatement("update " + TABLE_NAME + " set isActive = ? ",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-            prst.setString(1, "false");
+            prst.setBoolean(1, false);
             prst.executeUpdate();
 
         } catch (SQLException ex) {
@@ -235,5 +255,5 @@ public class DataAccessLayer {
         }
         return null;
     }
-    
+
 }

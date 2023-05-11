@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -36,17 +37,13 @@ class OnlinePlayer extends Thread {
     private Socket currentSocket;
     private String clientData, query;
     private StringTokenizer token;
-    OutputStream outputStream;
-    OutputStreamWriter outputStreamWriter;
-    BufferedWriter bufferedWriter;
     Thread thread;
     DataAccessLayer database;
-
     static Vector<OnlinePlayer> OnlineUsers = new Vector();
-
     private String username;
     private String password;
     private String email;
+    private HashMap<String, OnlinePlayer> gameRoom = new HashMap<>();
 
     public OnlinePlayer(Socket socket) {
         database = DataAccessLayer.getInstance();
@@ -55,11 +52,7 @@ class OnlinePlayer extends Thread {
         try {
             currentSocket = socket;
             dis = new DataInputStream(currentSocket.getInputStream());
-            ps = new PrintStream(currentSocket.getOutputStream());
-            outputStream = socket.getOutputStream();
-            outputStreamWriter = new OutputStreamWriter(outputStream);
-            bufferedWriter = new BufferedWriter(outputStreamWriter);
-           
+            ps = new PrintStream(currentSocket.getOutputStream()); 
             this.start();
         } catch (IOException ex) {
             System.out.println("problem in streams OnlinePlayer");
@@ -96,15 +89,13 @@ class OnlinePlayer extends Thread {
                                 break;
                             case "request":
                                 sendRequest();
-
                                 break;
                             case "accept":
                                 acceptRequest();
-                                System.out.println("aaaaaaaaaaaaaaaaaaa");
                                 break;
                             case "refuse":
-                               
-                                   refusedRequest();
+
+                                refusedRequest();
                                 System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
 
@@ -146,6 +137,8 @@ class OnlinePlayer extends Thread {
                 ps.println(username);
             } else if (check.equals("Invalid Email or Password")) {
                 ps.println("Invalid Email or Password");
+            } else if(check.equals("User Already Signed in")){
+                ps.println("User Already Signed in");
             }
         } catch (Exception ex) {
             Logger.getLogger(OnlinePlayer.class.getName()).log(Level.SEVERE, null, ex);
@@ -215,11 +208,8 @@ class OnlinePlayer extends Thread {
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(secondPlayer)) {
                 System.out.println("the opponent is " + user.username);
-                System.out.println(user.currentSocket.getLocalSocketAddress().toString());
                 user.ps.println("requestPlaying");
                 user.ps.println(player1);
-
-
             }
         }
     }
@@ -227,19 +217,22 @@ class OnlinePlayer extends Thread {
     private void acceptRequest() {
 
         String playerTwo = token.nextToken();
-        String playerone = token.nextToken();
+        String playerOne = token.nextToken();
         //change State for user to active
         OnlinePlayer player1 = null, player2 = null;
         for (OnlinePlayer player : OnlineUsers) {
-            if (player.username == playerone) {
+            if (player.username.equals(playerOne)) {
                 player1 = player;
-            } else if (player.username == playerTwo) {
+            } else if (player.username.equals(playerTwo)) {
                 player2 = player;
             }
             if (player1 == null || player2 == null) {
                 System.out.println("one of Them become not Avilable");
+            }else {
+                gameRoom.put(playerTwo, player2);
+                gameRoom.put(playerOne, player1);
+                player1.ps.println("gameStarted");
             }
-
         }
     }
 
