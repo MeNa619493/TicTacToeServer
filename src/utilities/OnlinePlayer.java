@@ -270,7 +270,7 @@ class OnlinePlayer extends Thread {
         String user = token.nextToken();
         String button = token.nextToken();
         OnlinePlayer onlinePlayer1 = gameRoom.get(user);
-        onlinePlayer1.ps.println("Game");
+        onlinePlayer1.ps.println("game");
         onlinePlayer1.ps.println(button); }
         
     private void logOut() {
