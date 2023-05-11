@@ -97,11 +97,13 @@ class OnlinePlayer extends Thread {
                                 Pressandplay();
                                 break;
                             case "refuse":
-
                                 refusedRequest();
                                 System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
-
+                            case "logout":
+                                logOut();
+                                System.out.println("log out");
+                                break;
                             default:
                                 break;
                         }
@@ -231,8 +233,17 @@ class OnlinePlayer extends Thread {
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
                 System.out.println("dddddddddddddddddddd");
+
+            } }
+            if (player1 == null || player2 == null) {
+                System.out.println("one of Them become not Avilable");
+            } else {
+                gameRoom.put(playerTwo, player2);
+                gameRoom.put(playerOne, player1);
+                player1.ps.println("gameStarted");
+
             }
-        }
+        
         if (player1 == null || player2 == null) {
             System.out.println("one of Them become not Avilable");
         } else {
@@ -240,8 +251,8 @@ class OnlinePlayer extends Thread {
             gameRoom.put(playerOne, player1);
             player1.ps.println("gameStarted");
         }
-
     }
+    
 
     private void refusedRequest() {
         System.out.println("refused");
@@ -254,13 +265,23 @@ class OnlinePlayer extends Thread {
         }
     }
 
+
     private void Pressandplay() {
         String user = token.nextToken();
         String button = token.nextToken();
         OnlinePlayer onlinePlayer1 = gameRoom.get(user);
         onlinePlayer1.ps.println("Game");
-        onlinePlayer1.ps.println(button);
+        onlinePlayer1.ps.println(button); }
         
+    private void logOut() {
+        System.out.println("log out");
+        String userName = token.nextToken();
+        database.logOutUser(userName);
+        for (OnlinePlayer user : OnlineUsers) {
+            if (user.username.equals(userName)) {
+                OnlineUsers.remove(userName);
+            }
+        }
 
     }
 }
