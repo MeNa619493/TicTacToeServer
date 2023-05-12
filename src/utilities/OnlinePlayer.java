@@ -13,6 +13,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +45,7 @@ class OnlinePlayer extends Thread {
     private String password;
     private String email;
     private static HashMap<String, OnlinePlayer> gameRoom = new HashMap<>();
+    private String globalOpponent = null;
 
     public OnlinePlayer(Socket socket) {
         database = DataAccessLayer.getInstance();
@@ -99,6 +101,12 @@ class OnlinePlayer extends Thread {
                             case "refuse":
                                 refusedRequest();
                                 break;
+                            case "withdraw":
+                                withdraw();
+                                break;
+                            case "available":
+                                resetPlayerActive();
+                                break;
                             case "logout":
                                 logOut();
                                 System.out.println("log out");
@@ -107,6 +115,20 @@ class OnlinePlayer extends Thread {
                                 break;
                         }
                     }
+                } catch (SocketException e) {
+                    server.database.setPlayerOffline(username);
+                    if (gameRoom.containsKey(username)) {
+                        if (globalOpponent != null) {
+                            OnlinePlayer player = null;
+                            player = gameRoom.get(globalOpponent);
+                            if (player != null) {
+                                player.ps.println(" withdraw");
+                                gameRoom.remove(username);
+                                gameRoom.remove(player.username);
+                            }
+                        }
+                    }
+                    e.printStackTrace();
                 } catch (IOException ex) {
                     System.out.println("Problem in reading from stream in OnlinePlayer");
                     ex.printStackTrace();
@@ -181,10 +203,9 @@ class OnlinePlayer extends Thread {
                         List<String> availableFriends = server.database.showAvailableFriend();
 
                         for (String name : availableFriends) {
-                            ps.println(name + "###");
+                            ps.println("  " + name + "###");
                         }
                         ps.println("finished");
-
                         ps.flush();
 
                         try {
@@ -205,12 +226,12 @@ class OnlinePlayer extends Thread {
     private void sendRequest() {
         secondPlayer = token.nextToken();
 
-
 //        System.out.println(secondPlayer);
         player1 = token.nextToken();
 //        System.out.println(player1);
         for (OnlinePlayer user : OnlineUsers) {
             if (user.username.equals(secondPlayer)) {
+                globalOpponent = user.username;
                 System.out.println("the opponent is " + user.username);
                 user.ps.println("requestPlaying");
                 user.ps.println(player1);
@@ -233,7 +254,7 @@ class OnlinePlayer extends Thread {
                 player2 = player;
             }
         }
-   
+
         if (player1 == null || player2 == null) {
             System.out.println("one of Them become not Avilable");
         } else {
@@ -246,7 +267,6 @@ class OnlinePlayer extends Thread {
             //player1.ps.println(playerTwo);
         }
     }
-    
 
     private void refusedRequest() {
         System.out.println("refused");
@@ -259,28 +279,42 @@ class OnlinePlayer extends Thread {
         }
     }
 
-
     private void PressAndPlay() {
         String user = token.nextToken();
         String button = token.nextToken();
         OnlinePlayer onlinePlayer1 = gameRoom.get(user);
         onlinePlayer1.ps.println(" game");
-        onlinePlayer1.ps.println(button); 
+        onlinePlayer1.ps.println(button);
     }
-        
+
+    private void withdraw() {
+        String opponent = token.nextToken();
+        OnlinePlayer player = null;
+        player = gameRoom.get(opponent);
+        if (player != null) {
+            player.ps.println(" withdraw");
+            gameRoom.remove(username);
+            gameRoom.remove(player.username);
+        }
+    }
+
+    private synchronized void resetPlayerActive() {
+        System.out.println("make him not playing: " + username);
+        server.changeIsPlaying("false", username);
+    }
+
     private void logOut() {
         System.out.println("log out");
         String userName = token.nextToken();
         server.logout(userName);
         OnlineUsers.remove(this);
-       
+
         try {
-           currentSocket.close();
-           System.out.println("socket closed after log out");
-       } catch (IOException ex) {
-           ex.printStackTrace();
-       }
+            currentSocket.close();
+            System.out.println("socket closed after log out");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
     }
-    
-    
+
 }

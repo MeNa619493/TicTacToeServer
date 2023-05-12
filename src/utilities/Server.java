@@ -103,6 +103,10 @@ public class Server {
         database.changeStateOfTwoPlayingPlayers(player1, player2);
     }
     
+    public void changeIsPlaying(String state ,String player){
+        database.setIsPlaying(state, player);
+    }
+    
     public void logout(String username) {
         database.logoutUser(username);
     }

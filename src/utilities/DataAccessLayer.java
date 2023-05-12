@@ -241,6 +241,17 @@ public class DataAccessLayer {
             ex.printStackTrace();
         }
     }
+    
+    public synchronized void setPlayerOffline(String username) {
+        try {
+            prst = con.prepareStatement("UPDATE " + TABLE_NAME + " SET ISACTIVE = FALSE WHERE USERNAME = ?");
+            prst.setString(1, username);
+            prst.executeUpdate();
+        } catch (SQLException ex) {
+            System.out.println("problem in setPlayerOffline");
+            ex.printStackTrace();
+        }
+    }
 
     public synchronized String getUsername(String email) {
         try {
