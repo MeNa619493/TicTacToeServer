@@ -28,6 +28,7 @@ public class TicTacToeServer extends Application {
         primaryStage.show(); 
         
         primaryStage.setOnCloseRequest((event) -> {
+            
             System.exit(1);
         }); 
     }
