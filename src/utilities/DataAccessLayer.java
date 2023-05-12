@@ -226,14 +226,14 @@ public class DataAccessLayer {
     }
 
     public synchronized void changeStateOfTwoPlayingPlayers(String player1, String player2) {
-        setIsPlaying(true, player1);
-        setIsPlaying(true, player2);
+        setIsPlaying("true", player1);
+        setIsPlaying("true", player2);
     }
 
-    public synchronized void setIsPlaying(boolean state, String username) {
+    public synchronized void setIsPlaying(String state, String username) {
         try {
             prst = con.prepareStatement("UPDATE " + TABLE_NAME + " SET ISPLAY = ? WHERE USERNAME = ?");
-            prst.setBoolean(1, state);
+            prst.setString(1, state);
             prst.setString(2, username);
             prst.executeUpdate();
         } catch (SQLException ex) {
@@ -288,7 +288,7 @@ public class DataAccessLayer {
 
     public synchronized void logoutUser(String username) {
         try {
-            prst = con.prepareStatement("UPDATE " + TABLE_NAME + " SET ISPLAY = ? AND ISACTIVE = ? "
+            prst = con.prepareStatement("UPDATE " + TABLE_NAME + " SET ISPLAY = ?, ISACTIVE = ? "
                     + "WHERE USERNAME = ?",
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
             prst.setString(1, "false");

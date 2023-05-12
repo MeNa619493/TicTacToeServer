@@ -99,6 +99,10 @@ public class Server {
         }  
     }
     
+    public void changePlayerState(String player1, String player2) {
+        database.changeStateOfTwoPlayingPlayers(player1, player2);
+    }
+    
     public void logout(String username) {
         database.logoutUser(username);
     }

@@ -94,11 +94,10 @@ class OnlinePlayer extends Thread {
                                 acceptRequest();
                                 break;
                             case "play":
-                                Pressandplay();
+                                PressAndPlay();
                                 break;
                             case "refuse":
                                 refusedRequest();
-                                System.out.println("rrrrrrrrrrrrrrrrr");
                                 break;
                             case "logout":
                                 logOut();
@@ -230,19 +229,21 @@ class OnlinePlayer extends Thread {
         for (OnlinePlayer player : OnlineUsers) {
             if (player.username.equals(playerOne)) {
                 player1 = player;
-                System.out.println("mmmmmmmmmmmmmmmmm");
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
-                System.out.println("dddddddddddddddddddd");
-            } 
+            }
         }
    
         if (player1 == null || player2 == null) {
             System.out.println("one of Them become not Avilable");
         } else {
+            player1.thread.stop();
+            player2.thread.stop();
+            server.changePlayerState(playerOne, playerTwo);
             gameRoom.put(playerTwo, player2);
             gameRoom.put(playerOne, player1);
             player1.ps.println("gameStarted");
+            //player1.ps.println(playerTwo);
         }
     }
     
@@ -259,11 +260,11 @@ class OnlinePlayer extends Thread {
     }
 
 
-    private void Pressandplay() {
+    private void PressAndPlay() {
         String user = token.nextToken();
         String button = token.nextToken();
         OnlinePlayer onlinePlayer1 = gameRoom.get(user);
-        onlinePlayer1.ps.println("game");
+        onlinePlayer1.ps.println(" game");
         onlinePlayer1.ps.println(button); 
     }
         
@@ -271,11 +272,14 @@ class OnlinePlayer extends Thread {
         System.out.println("log out");
         String userName = token.nextToken();
         server.logout(userName);
-        for (OnlinePlayer user : OnlineUsers) {
-            if (user.username.equals(userName)) {
-                OnlineUsers.remove(user);
-            }
-        }
+        OnlineUsers.remove(this);
+       
+        try {
+           currentSocket.close();
+           System.out.println("socket closed after log out");
+       } catch (IOException ex) {
+           ex.printStackTrace();
+       }
     }
     
     
