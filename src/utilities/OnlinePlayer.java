@@ -243,7 +243,7 @@ class OnlinePlayer extends Thread {
             gameRoom.put(playerTwo, player2);
             gameRoom.put(playerOne, player1);
             player1.ps.println("gameStarted");
-            player1.ps.println(playerTwo);
+            //player1.ps.println(playerTwo);
         }
     }
     
@@ -264,7 +264,6 @@ class OnlinePlayer extends Thread {
         String user = token.nextToken();
         String button = token.nextToken();
         OnlinePlayer onlinePlayer1 = gameRoom.get(user);
-        onlinePlayer1.ps.flush();
         onlinePlayer1.ps.println(" game");
         onlinePlayer1.ps.println(button); 
     }
