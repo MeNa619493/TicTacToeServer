@@ -206,7 +206,6 @@ class OnlinePlayer extends Thread {
     private void sendRequest() {
         secondPlayer = token.nextToken();
 
-
 //        System.out.println(secondPlayer);
         player1 = token.nextToken();
 //        System.out.println(player1);
@@ -234,9 +233,9 @@ class OnlinePlayer extends Thread {
             } else if (player.username.equals(playerTwo)) {
                 player2 = player;
                 System.out.println("dddddddddddddddddddd");
-            } 
+            }
         }
-   
+
         if (player1 == null || player2 == null) {
             System.out.println("one of Them become not Avilable");
         } else {
@@ -257,21 +256,20 @@ class OnlinePlayer extends Thread {
         }
     }
 
-
     private void Pressandplay() {
         String user = token.nextToken();
         System.out.println(user);
         String button = token.nextToken();
         System.out.println(button);
         OnlinePlayer onlinePlayer1 = gameRoom.get(user);
-        if(onlinePlayer1!=null){
+        if (onlinePlayer1 != null) {
             System.out.println("not nullllllllllllllllllll");
             System.out.println(onlinePlayer1.username);
         }
         onlinePlayer1.ps.println("game");
-        onlinePlayer1.ps.println(button); 
+        onlinePlayer1.ps.println(button);
     }
-        
+
     private void logOut() {
         System.out.println("log out");
         String userName = token.nextToken();
@@ -282,6 +280,5 @@ class OnlinePlayer extends Thread {
             }
         }
     }
-    
-    
+
 }
