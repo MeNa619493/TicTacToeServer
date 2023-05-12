@@ -5,9 +5,12 @@ import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,7 +35,7 @@ public class ServerUiClass extends AnchorPane {
     protected final Text NumberOfOffline;
     private StringTokenizer token;
 
-   int type ;
+    int type;
     String username;
     String email;
     String password;
@@ -154,9 +157,15 @@ public class ServerUiClass extends AnchorPane {
                     btnServerState.setId("myButtonOff");
                     System.out.println("server Off");
                 }
+
+                btnServerState.setDisable(true);
+                Timeline timeline = new Timeline(new KeyFrame(javafx.util.Duration.seconds(2), e -> {
+                    btnServerState.setDisable(false);
+                }));
+                timeline.play();
             }
         });
-        
+
         observeChart();
     }
 
@@ -219,4 +228,3 @@ public class ServerUiClass extends AnchorPane {
     }
 
 }
-
